@@ -18,7 +18,7 @@ namespace TargDeMuzica.Models
         public virtual Product Product { get; set; }
 
         //foreign key user
-       // public int UserID { get; set; }
+        public virtual ApplicationUser User { get; set; }
 
     }
 }
