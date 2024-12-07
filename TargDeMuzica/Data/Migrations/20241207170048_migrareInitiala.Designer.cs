@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TargDeMuzica.Data;
 
@@ -11,9 +12,11 @@ using TargDeMuzica.Data;
 namespace TargDeMuzica.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241207170048_migrareInitiala")]
+    partial class migrareInitiala
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,21 +24,6 @@ namespace TargDeMuzica.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("CartProduct", b =>
-                {
-                    b.Property<int>("CartsCartID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductsProductID")
-                        .HasColumnType("int");
-
-                    b.HasKey("CartsCartID", "ProductsProductID");
-
-                    b.HasIndex("ProductsProductID");
-
-                    b.ToTable("CartProduct");
-                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -239,163 +227,6 @@ namespace TargDeMuzica.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("TargDeMuzica.Models.Artist", b =>
-                {
-                    b.Property<int>("ArtistID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ArtistID"));
-
-                    b.Property<int>("ArtistAge")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ArtistName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ArtistID");
-
-                    b.ToTable("Artists");
-                });
-
-            modelBuilder.Entity("TargDeMuzica.Models.Cart", b =>
-                {
-                    b.Property<int>("CartID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CartID"));
-
-                    b.Property<int>("TotalPrice")
-                        .HasColumnType("int");
-
-                    b.HasKey("CartID");
-
-                    b.ToTable("Carts");
-                });
-
-            modelBuilder.Entity("TargDeMuzica.Models.IncomingRequest", b =>
-                {
-                    b.Property<int>("RequestID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RequestID"));
-
-                    b.Property<int>("ProductID")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("RequestApproved")
-                        .HasColumnType("bit");
-
-                    b.HasKey("RequestID");
-
-                    b.HasIndex("ProductID");
-
-                    b.ToTable("IncomingRequests");
-                });
-
-            modelBuilder.Entity("TargDeMuzica.Models.MusicSuport", b =>
-                {
-                    b.Property<int>("MusicSuportID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MusicSuportID"));
-
-                    b.Property<int>("MusicSuportName")
-                        .HasColumnType("int");
-
-                    b.HasKey("MusicSuportID");
-
-                    b.ToTable("MusicSuports");
-                });
-
-            modelBuilder.Entity("TargDeMuzica.Models.Product", b =>
-                {
-                    b.Property<int>("ProductID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductID"));
-
-                    b.Property<int>("ArtistID")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("IncomingRequestRequestID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MusicSuportID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ProductDescription")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProductGenres")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProductName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ProductID");
-
-                    b.HasIndex("ArtistID");
-
-                    b.HasIndex("IncomingRequestRequestID");
-
-                    b.HasIndex("MusicSuportID")
-                        .IsUnique();
-
-                    b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("TargDeMuzica.Models.Review", b =>
-                {
-                    b.Property<int>("ReviewId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewId"));
-
-                    b.Property<int>("ProductID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ReviewContent")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("ReviewDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("StarRating")
-                        .HasColumnType("int");
-
-                    b.HasKey("ReviewId");
-
-                    b.HasIndex("ProductID");
-
-                    b.ToTable("Reviews");
-                });
-
-            modelBuilder.Entity("CartProduct", b =>
-                {
-                    b.HasOne("TargDeMuzica.Models.Cart", null)
-                        .WithMany()
-                        .HasForeignKey("CartsCartID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TargDeMuzica.Models.Product", null)
-                        .WithMany()
-                        .HasForeignKey("ProductsProductID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -445,72 +276,6 @@ namespace TargDeMuzica.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("TargDeMuzica.Models.IncomingRequest", b =>
-                {
-                    b.HasOne("TargDeMuzica.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("TargDeMuzica.Models.Product", b =>
-                {
-                    b.HasOne("TargDeMuzica.Models.Artist", "Artist")
-                        .WithMany("Products")
-                        .HasForeignKey("ArtistID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TargDeMuzica.Models.IncomingRequest", null)
-                        .WithMany("ProductsToBeReviewed")
-                        .HasForeignKey("IncomingRequestRequestID");
-
-                    b.HasOne("TargDeMuzica.Models.MusicSuport", "MusicSuport")
-                        .WithOne("Product")
-                        .HasForeignKey("TargDeMuzica.Models.Product", "MusicSuportID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Artist");
-
-                    b.Navigation("MusicSuport");
-                });
-
-            modelBuilder.Entity("TargDeMuzica.Models.Review", b =>
-                {
-                    b.HasOne("TargDeMuzica.Models.Product", "Product")
-                        .WithMany("Reviews")
-                        .HasForeignKey("ProductID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("TargDeMuzica.Models.Artist", b =>
-                {
-                    b.Navigation("Products");
-                });
-
-            modelBuilder.Entity("TargDeMuzica.Models.IncomingRequest", b =>
-                {
-                    b.Navigation("ProductsToBeReviewed");
-                });
-
-            modelBuilder.Entity("TargDeMuzica.Models.MusicSuport", b =>
-                {
-                    b.Navigation("Product")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("TargDeMuzica.Models.Product", b =>
-                {
-                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }
