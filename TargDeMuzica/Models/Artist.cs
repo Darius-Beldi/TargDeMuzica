@@ -1,4 +1,5 @@
-﻿namespace TargDeMuzica.Models
+﻿using System.ComponentModel.DataAnnotations;
+namespace TargDeMuzica.Models
 {
     public class Artist
     {
