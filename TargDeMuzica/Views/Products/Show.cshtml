@@ -1,0 +1,137 @@
+﻿@model TargDeMuzica.Models.Product
+
+@* Afisarea unui articol impreuna cu categoria din care face *@
+<div class="d-flex justify-content-center">
+
+    <a class="btn btn-outline-success" href="/Products/Index/">Afisare produse</a>
+
+    <a class="btn btn-outline-success" href="/Products/New">Adauga proudus</a>
+
+</div>
+
+<br />
+
+<div class="card">
+
+    <div class="card-body">
+
+        <h3 class="card-title alert-success py-3 px-3 rounded-2">@Model.ProductName</h3>
+
+        <div class="card-text">@Model.ProductDescription</div>
+
+
+        <div><i class="bi bi-globe"></i> @Model.MusicSuport.MusicSuportName</div>
+
+
+    </div>
+</div>
+
+<hr />
+
+<div class="d-flex flex-row justify-content-between">
+
+    <a asp-controller="Products" asp-action="Edit" asp-route-id="@Model.ProductID" class="btn btn-success">Editeaza produs</a>
+
+    <form method="post" asp-controller="Products" asp-action="Delete" asp-route-id="@Model.ProductID">
+
+        <button class="btn btn-danger" type="submit">Sterge articol</button>
+
+    </form>
+
+</div>
+
+</div>
+
+<br />
+<br />
+
+@* Afisare comentarii impreuna cu butoanele de editare si stergere *@
+
+@foreach (var review in Model.Reviews)
+{
+    <div class="container">
+        <div class="row">
+            @*Un row are 12 col in bootstrap*@
+            <div class="col-md-2"></div>
+
+            <div class="col-md-8">
+
+                <div>
+
+                    <p>@review.ReviewContent</p>
+                    <small>@review.ReviewDate</small>
+
+                </div>
+                <br>
+
+                <div class="d-flex">
+
+                    <div>
+
+                        <a class="btn btn-outline-primary" href="/Comments/Edit/@review.ReviewId"><i class="bi bi-pencil-square"></i>Editeaza</a>
+
+                    </div>
+
+                    <div>
+
+                        <form method="post" asp-controller="Comments" asp-action="Delete" asp-route-id="@review.ReviewId">
+
+                            <button class="btn btn-outline-danger" type="submit"><i class="bi bi-trash"></i>Sterge</button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+                <br />
+
+            </div>
+
+            <div class="col-md-2"></div>
+
+        </div>
+
+    </div>
+}
+
+
+@* Afisarea formularului in care se poate adauga un comentariu *@
+
+<div class="container">
+
+    <div class="row">
+
+        <div class="col-md-2"></div>
+
+        <div class="col-md-8">
+
+            <div class="card">
+
+                <form method="post" asp-controller="Reviews" asp-action="New">
+
+                    <div class="card-body">
+
+                        <input type="hidden" name="ProductID" value="@Model.ProductID" />
+
+                        <label>Continut comentariu</label>
+                        <br />
+
+                        <textarea class="form-control" name="ReviewContent"></textarea>
+                        <br />
+
+                        <button class="btn btn-success " type="submit">Adauga comentariul</button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-2"></div>
+
+    </div>
+
+</div>
