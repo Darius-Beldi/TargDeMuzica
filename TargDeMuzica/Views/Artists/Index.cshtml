@@ -15,8 +15,8 @@
 {
     @Html.Label("ArtistName", "Nume artist")
     <p>@artist.ArtistName</p>
-    <a class="btn alert-success" asp-action="Show" asp-controller="Artists" asp-route-id="@artist.Id">Afisare artist</a>
-    <a class="btn alert-success" asp-action="Edit" asp-controller="Artists" asp-route-id="@artist.Id">Editare artist</a>
+    <a class="btn alert-success" asp-action="Show" asp-controller="Artists" asp-route-id="@artist.ArtistID">Afisare artist</a>
+    <a class="btn alert-success" asp-action="Edit" asp-controller="Artists" asp-route-id="@artist.ArtistID">Editare artist</a>
 
     <br />
     <hr />
