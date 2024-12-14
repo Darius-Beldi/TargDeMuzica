@@ -9,5 +9,6 @@ namespace TargDeMuzica.Data
 			: base(options)
 		{
 		}
+		
 	}
 }
