@@ -9,8 +9,7 @@ namespace TargDeMuzica.Models
         public int TotalPrice { get; set; }
         //vectorul de produse din cos ( produsele din tabelul Products) Many to many intre Cart si Product
         public virtual ICollection<Product> Products { get; set; }
-      
-       // public int UserID { get; set; }
-       // public virtual User User { get; set; }
+
+       public virtual ApplicationUser User { get; set; }
     }
 }
