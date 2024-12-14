@@ -1,59 +1,24 @@
-﻿@model IEnumerable<TargDeMuzica.Models.Product>
-
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
 @{
-    ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ProductName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProductDescription)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProductGenres)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MusicSuport)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Artist)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProductName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProductDescription)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProductGenres)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MusicSuport.MusicSuportID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Artist.ArtistID)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ProductID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ProductID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ProductID">Delete</a>
-            </td>
-        </tr>
+
+@foreach (var product in ViewBag.Products)
+{
+    <div class="card">
+
+        <div class="card-body">
+
+            <h3 class="card-title alert-success py-3 px-3 rounded-2">@product.ProductName</h3>
+
+            <div class="card-text">@product.ProductDescription</div>
+        </div>
+
+    </div>
+
+    <br />
+    <br />
 }
-    </tbody>
-</table>
