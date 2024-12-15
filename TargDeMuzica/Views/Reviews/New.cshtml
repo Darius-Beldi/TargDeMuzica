@@ -1,0 +1,16 @@
+﻿@model TargDeMuzica.Models.Review;
+
+<h2> Adaugare comentariu</h2>
+
+
+<form method="post" asp-action="New" asp-controller="Reviews">
+
+    <div class="form-group">
+        <label asp-for="ReviewContent" class="form-label">Comentariu:</label>
+        <input asp-for="ReviewContent" class="form-control" />
+    </div>
+
+    <button class="btn btn-success" type="submit">Adauga comentariu</button>
+
+</form>
+

@@ -1,0 +1,15 @@
+﻿@model TargDeMuzica.Models.Review;
+
+
+<h2>@ViewBag.ReviewContent</h2>
+
+<form method="post" asp-action="Edit" asp-controller="Reviews" asp-route-id="@Model.ReviewId">
+
+    <div class="form-group">
+        <label asp-for="ReviewContent" class="form-label">Comentariu:</label>
+        <input asp-for="ReviewContent" class="form-control" />
+    </div>
+
+    <button class="btn btn-success" type="submit">Modifica comenatriul</button>
+
+</form>
