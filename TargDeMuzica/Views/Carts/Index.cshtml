@@ -1,6 +1,6 @@
 ﻿
 
-<h2>@ViewBag.ArtistName</h2>
+<h2>Carts</h2>
 <br />
 
 @if (TempData.ContainsKey("message"))
@@ -11,7 +11,7 @@
 <br />
 <br />
 
-@foreach (var artist in ViewBag.Artists)
+@foreach (var artist in ViewBag.Carts)
 {
     @Html.Label("TotalPrice", "Pret total")
     <p>@artist.ArtistName</p>

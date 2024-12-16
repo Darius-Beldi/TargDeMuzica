@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TargDeMuzica.Data;
 
@@ -11,9 +12,11 @@ using TargDeMuzica.Data;
 namespace TargDeMuzica.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241216143208_nullable1")]
+    partial class nullable1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -370,11 +373,11 @@ namespace TargDeMuzica.Data.Migrations
 
             modelBuilder.Entity("TargDeMuzica.Models.Review", b =>
                 {
-                    b.Property<int>("ReviewID")
+                    b.Property<int>("ReviewId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewId"));
 
                     b.Property<int?>("ProductID")
                         .HasColumnType("int");
@@ -392,7 +395,7 @@ namespace TargDeMuzica.Data.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("ReviewID");
+                    b.HasKey("ReviewId");
 
                     b.HasIndex("ProductID");
 

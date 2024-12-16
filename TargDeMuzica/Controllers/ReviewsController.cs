@@ -42,10 +42,11 @@ namespace TargDeMuzica.Controllers
         {
 
 
-            rev.ReviewDate = DateTime.Now;
+// rev.ReviewDate = DateTime.Now;
 
             try
             {
+                rev.ReviewDate = DateTime.Now;
                 db.Reviews.Add(rev);
                 db.SaveChanges();
                 TempData["message"] = "Review-ul a fost adaugat";
