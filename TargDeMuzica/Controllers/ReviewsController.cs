@@ -40,6 +40,10 @@ namespace TargDeMuzica.Controllers
         [HttpPost]
         public ActionResult New(Review rev)
         {
+
+
+            rev.ReviewDate = DateTime.Now;
+
             try
             {
                 db.Reviews.Add(rev);
@@ -69,6 +73,9 @@ namespace TargDeMuzica.Controllers
             {
 
                 review.ReviewContent = requestReview.ReviewContent;
+                review.ReviewDate = requestReview.ReviewDate;
+                review.StarRating = requestReview.StarRating;
+
                 db.SaveChanges();
                 TempData["message"] = "Comentariul a fost adugat cu succes!!";
                 return RedirectToAction("Index");

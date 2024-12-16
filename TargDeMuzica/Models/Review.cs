@@ -5,8 +5,10 @@ namespace TargDeMuzica.Models
     {
         [Key]
         public int ReviewId { get; set; }
+        [Required(ErrorMessage = "Continutul comentariului este obligatoriu!")]
         public string ReviewContent { get; set; }
-        public DateTime ReviewDate { get; set; } 
+        public DateTime ReviewDate { get; set; }
+        [Required(ErrorMessage = "Rating-ul este obligatoriu!")]
         public int StarRating { get; set; }
 
         public virtual Product Product { get; set; }
