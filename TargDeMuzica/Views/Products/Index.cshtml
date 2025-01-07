@@ -1,24 +1,50 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿
+
+<h2>@ViewBag.ReviewContent</h2>
+<br />
+
+<a class="btn btn-success" asp-action="New" asp-controller="Products">Adauga produs</a>
+
+@if (TempData.ContainsKey("message"))
+{
+    <h1>
+        @ViewBag.
+
+        <h2>@ViewBag.ReviewContent</h2>
+        <br />
+
+        @if (TempData.ContainsKey("message"))
+        {
+            <h1>@ViewBag.message</h1>
+        }
+
+        <br />
+        <br />
+
+
+
+        <br />
+    </h1>
 }
-
-
-
 @foreach (var product in ViewBag.Products)
 {
-    <div class="card">
+    @Html.Label("ProductName", "Nume")
+    <p>@product.ProductName</p>
 
-        <div class="card-body">
+    @Html.Label("ProductPrice", "Pret")
+    <p>@product.ProductPrice</p>
 
-            <h3 class="card-title alert-success py-3 px-3 rounded-2">@product.ProductName</h3>
+    @Html.Label("ProductScore", "Scor")
+    <p>@product.ProductPrice</p>
 
-            <div class="card-text">@product.ProductDescription</div>
-        </div>
+    @Html.Label("ProductImageLocation", "Imagine")
+    <p>@product.ProductImageLocation</p>
 
-    </div>
+    <a class="btn alert-success" asp-action="Show" asp-controller="Products" asp-route-id="@product.ProductID">Afisare produs</a>
+    <a class="btn alert-success" asp-action="Edit" asp-controller="Products" asp-route-id="@product.ProductID">Editare produs</a>
 
     <br />
+    <hr />
     <br />
 }
+<br />

@@ -6,7 +6,7 @@ namespace TargDeMuzica.Models
     {
         [Key]
         public int MusicSuportID { get; set; }
-        public int MusicSuportName { get; set;}
-        public virtual Product Product { get; set; }
+        public string MusicSuportName { get; set;}
+        public virtual ICollection<Product>? Products { get; set; }
     }
 }
