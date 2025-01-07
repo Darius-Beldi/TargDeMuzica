@@ -1,137 +1,105 @@
 ﻿@model TargDeMuzica.Models.Product
 
-@* Afisarea unui articol impreuna cu categoria din care face *@
-<div class="d-flex justify-content-center">
 
-    <a class="btn btn-outline-success" href="/Products/Index/">Afisare produse</a>
+<h1>@Model.ProductName</h1>
 
-    <a class="btn btn-outline-success" href="/Products/New">Adauga proudus</a>
+<div class="row">
+    <div class="col-md-6">
+        <img src="@Model.ProductImageLocation" class="img-fluid" />
+    </div>
+    <div class="col-md-6">
+        <dl class="row">
+            <dt class="col-sm-4">Description:</dt>
+            <dd class="col-sm-8">@Model.ProductDescription</dd>
 
-</div>
+            <dt class="col-sm-4">Price:</dt>
+            <dd class="col-sm-8">@Model.ProductPrice.ToString("C")</dd>
 
-<br />
+            <dt class="col-sm-4">Stock:</dt>
+            <dd class="col-sm-8">@Model.ProductStock</dd>
 
-<div class="card">
+            <dt class="col-sm-4">Score:</dt>
+            <dd class="col-sm-8">@(Model.ProductScore.HasValue ? Model.ProductScore.Value.ToString("F1") : "Not Rated")</dd>
 
-    <div class="card-body">
+            <dt class="col-sm-4">Genres:</dt>
+            <dd class="col-sm-8">@(Model.ProductGenres != null ? string.Join(", ", Model.ProductGenres) : "None")</dd>
 
-        <h3 class="card-title alert-success py-3 px-3 rounded-2">@Model.ProductName</h3>
+            <dt class="col-sm-4">Music Support:</dt>
+            <dd class="col-sm-8">@(Model.MusicSuport != null ? string.Join(", ", Model.MusicSuport.Select(ms => ms.MusicSuportName)) : "None")</dd>
 
-        <div class="card-text">@Model.ProductDescription</div>
+            <dt class="col-sm-4">Artist:</dt>
+            <dd class="col-sm-8">@(Model.Artist != null ? Model.Artist.ArtistName : "Unknown")</dd>
+        </dl>
 
-
-        <div><i class="bi bi-globe"></i> @Model.MusicSuport.MusicSuportName</div>
-
-
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
     </div>
 </div>
 
-<hr />
-
-<div class="d-flex flex-row justify-content-between">
-
-    <a asp-controller="Products" asp-action="Edit" asp-route-id="@Model.ProductID" class="btn btn-success">Editeaza produs</a>
-
-    <form method="post" asp-controller="Products" asp-action="Delete" asp-route-id="@Model.ProductID">
-
-        <button class="btn btn-danger" type="submit">Sterge articol</button>
-
-    </form>
-
-</div>
-
-</div>
-
-<br />
-<br />
-
-@* Afisare comentarii impreuna cu butoanele de editare si stergere *@
-
-@foreach (var review in Model.Reviews)
-{
-    <div class="container">
-        <div class="row">
-            @*Un row are 12 col in bootstrap*@
-            <div class="col-md-2"></div>
-
-            <div class="col-md-8">
-
-                <div>
-
-                    <p>@review.ReviewContent</p>
-                    <small>@review.ReviewDate</small>
-
-                </div>
-                <br>
-
-                <div class="d-flex">
-
-                    <div>
-
-                        <a class="btn btn-outline-primary" href="/Comments/Edit/@review.ReviewID"><i class="bi bi-pencil-square"></i>Editeaza</a>
-
-                    </div>
-
-                    <div>
-
-                        <form method="post" asp-controller="Comments" asp-action="Delete" asp-route-id="@review.ReviewID">
-
-                            <button class="btn btn-outline-danger" type="submit"><i class="bi bi-trash"></i>Sterge</button>
-
-                        </form>
-
-                    </div>
-
-                </div>
-
-                <br />
-
-            </div>
-
-            <div class="col-md-2"></div>
-
-        </div>
-
-    </div>
-}
 
 
-@* Afisarea formularului in care se poate adauga un comentariu *@
+<div class="row mt-4">
+    <div class="col-12">
+        <h2>Reviews</h2>
+        
+<div class="row mt-4">
+    <div class="col-12">
+        <h2>Reviews</h2>
 
-<div class="container">
 
-    <div class="row">
+                <a class="btn btn-success" asp-action="New" asp-controller="Reviews">Adauga review</a>
 
-        <div class="col-md-2"></div>
 
-        <div class="col-md-8">
-
-            <div class="card">
-
-                <form method="post" asp-controller="Reviews" asp-action="New">
-
+        @if (Model.Reviews != null && Model.Reviews.Any())
+        {
+            foreach (var review in Model.Reviews.OrderByDescending(r => r.ReviewDate))
+            {
+                <div class="card mb-3">
                     <div class="card-body">
-
-                        <input type="hidden" name="ProductID" value="@Model.ProductID" />
-
-                        <label>Continut comentariu</label>
-                        <br />
-
-                        <textarea class="form-control" name="ReviewContent"></textarea>
-                        <br />
-
-                        <button class="btn btn-success " type="submit">Adauga comentariul</button>
-
+                        <div class="d-flex justify-content-between">
+                            <h5 class="card-title">
+                                @for (int i = 0; i < review.StarRating; i++)
+                                {
+                                    <span class="text-warning">★</span>
+                                }
+                            </h5>
+                            <small class="text-muted">@review.ReviewDate.ToString("MMM dd, yyyy")</small>
+                        </div>
+                        <p class="card-text">@review.ReviewContent</p>
+                        <small class="text-muted">By: @review.User?.UserName</small>
                     </div>
-
-                </form>
-
-            </div>
-
-        </div>
-
-        <div class="col-md-2"></div>
-
+                </div>
+            }
+        }
+        else
+        {
+            <p>No reviews yet.</p>
+        }
     </div>
-
+</div>
+        @if (Model.Reviews != null && Model.Reviews.Any())
+        {
+            foreach (var review in Model.Reviews.OrderByDescending(r => r.ReviewDate))
+            {
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <h5 class="card-title">
+                                @for (int i = 0; i < review.StarRating; i++)
+                                {
+                                    <span class="text-warning">★</span>
+                                }
+                            </h5>
+                            <small class="text-muted">@review.ReviewDate.ToString("MMM dd, yyyy")</small>
+                        </div>
+                        <p class="card-text">@review.ReviewContent</p>
+                        <small class="text-muted">By: @review.User?.UserName</small>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p>No reviews yet.</p>
+        }
+    </div>
 </div>

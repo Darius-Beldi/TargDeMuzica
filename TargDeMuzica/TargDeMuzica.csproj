@@ -20,4 +20,8 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\Products\Images\30.png" />
+  </ItemGroup>
+
 </Project>

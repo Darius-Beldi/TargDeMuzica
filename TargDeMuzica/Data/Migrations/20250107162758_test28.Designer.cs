@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TargDeMuzica.Data;
 
@@ -11,9 +12,11 @@ using TargDeMuzica.Data;
 namespace TargDeMuzica.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250107162758_test28")]
+    partial class test28
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -172,21 +175,6 @@ namespace TargDeMuzica.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("MusicSuportProduct", b =>
-                {
-                    b.Property<int>("MusicSuportID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductsProductID")
-                        .HasColumnType("int");
-
-                    b.HasKey("MusicSuportID", "ProductsProductID");
-
-                    b.HasIndex("ProductsProductID");
-
-                    b.ToTable("MusicSuportProduct");
                 });
 
             modelBuilder.Entity("TargDeMuzica.Models.ApplicationUser", b =>
@@ -391,6 +379,10 @@ namespace TargDeMuzica.Data.Migrations
 
                     b.HasIndex("IncomingRequestRequestID");
 
+                    b.HasIndex("MusicSuportID")
+                        .IsUnique()
+                        .HasFilter("[MusicSuportID] IS NOT NULL");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Products");
@@ -495,21 +487,6 @@ namespace TargDeMuzica.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MusicSuportProduct", b =>
-                {
-                    b.HasOne("TargDeMuzica.Models.MusicSuport", null)
-                        .WithMany()
-                        .HasForeignKey("MusicSuportID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TargDeMuzica.Models.Product", null)
-                        .WithMany()
-                        .HasForeignKey("ProductsProductID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("TargDeMuzica.Models.Cart", b =>
                 {
                     b.HasOne("TargDeMuzica.Models.ApplicationUser", "User")
@@ -546,11 +523,17 @@ namespace TargDeMuzica.Data.Migrations
                         .WithMany("ProductsToBeReviewed")
                         .HasForeignKey("IncomingRequestRequestID");
 
+                    b.HasOne("TargDeMuzica.Models.MusicSuport", "MusicSuport")
+                        .WithOne("Product")
+                        .HasForeignKey("TargDeMuzica.Models.Product", "MusicSuportID");
+
                     b.HasOne("TargDeMuzica.Models.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
 
                     b.Navigation("Artist");
+
+                    b.Navigation("MusicSuport");
 
                     b.Navigation("User");
                 });
@@ -578,6 +561,12 @@ namespace TargDeMuzica.Data.Migrations
             modelBuilder.Entity("TargDeMuzica.Models.IncomingRequest", b =>
                 {
                     b.Navigation("ProductsToBeReviewed");
+                });
+
+            modelBuilder.Entity("TargDeMuzica.Models.MusicSuport", b =>
+                {
+                    b.Navigation("Product")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TargDeMuzica.Models.Product", b =>
