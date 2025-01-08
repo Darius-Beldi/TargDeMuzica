@@ -404,7 +404,7 @@ namespace TargDeMuzica.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewID"));
 
-                    b.Property<int?>("ProductID")
+                    b.Property<int?>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<string>("ReviewContent")
@@ -414,6 +414,10 @@ namespace TargDeMuzica.Data.Migrations
                     b.Property<DateTime>("ReviewDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("ReviewerName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("StarRating")
                         .HasColumnType("int");
 
@@ -422,7 +426,7 @@ namespace TargDeMuzica.Data.Migrations
 
                     b.HasKey("ReviewID");
 
-                    b.HasIndex("ProductID");
+                    b.HasIndex("ProductId");
 
                     b.HasIndex("UserId");
 
@@ -559,7 +563,7 @@ namespace TargDeMuzica.Data.Migrations
                 {
                     b.HasOne("TargDeMuzica.Models.Product", "Product")
                         .WithMany("Reviews")
-                        .HasForeignKey("ProductID");
+                        .HasForeignKey("ProductId");
 
                     b.HasOne("TargDeMuzica.Models.ApplicationUser", "User")
                         .WithMany()

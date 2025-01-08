@@ -44,16 +44,16 @@ namespace TargDeMuzica.Controllers
 
 // rev.ReviewDate = DateTime.Now;
 
-            try
+            if(ModelState.IsValid)
             {
                 rev.ReviewDate = DateTime.Now;
                 db.Reviews.Add(rev);
                 db.SaveChanges();
                 TempData["message"] = "Review-ul a fost adaugat";
-                return RedirectToAction("Index");
+                return RedirectToAction("Show", "Products", new { id = rev.ProductId });
+
             }
 
-            catch (Exception e)
             {
                 return View(rev);
             }
