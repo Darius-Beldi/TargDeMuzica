@@ -36,70 +36,69 @@
 </div>
 
 
+@*DE AICI IN JOS USER INREGISTRAT SAU MAI SUS*@
 
-<div class="row mt-4">
-    <div class="col-12">
-        <h2>Reviews</h2>
-        
-<div class="row mt-4">
-    <div class="col-12">
-        <h2>Reviews</h2>
+<h2>Add a Review</h2>
+<div class="container">
+    <form asp-controller="Reviews" asp-action="New" method="post">
+        <input type="hidden" name="ProductId" value="@Model.ProductID" />
 
+        <div class="form-group">
+            <label for="ReviewerName">Your Name</label>
+            <input type="text" class="form-control" id="ReviewerName" name="ReviewerName" required />
+        </div>
 
-                <a class="btn btn-success" asp-action="New" asp-controller="Reviews">Adauga review</a>
+        <div class="form-group">
+            <label for="ReviewContent">Review Content</label>
+            <textarea class="form-control" id="ReviewContent" name="ReviewContent" rows="4" placeholder="Share your thoughts about this product..."></textarea>
+        </div>
+        <div class="form-group">
+            <label for="StarRating">Rating</label>
+            <select class="form-control" id="StarRating" name="StarRating" required>
+                <option value="" disabled selected>Select a rating</option>
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <option value="@i">@i Star@(i > 1 ? "s" : "")</option>
+                }
+            </select>
+        </div>
 
-
-        @if (Model.Reviews != null && Model.Reviews.Any())
-        {
-            foreach (var review in Model.Reviews.OrderByDescending(r => r.ReviewDate))
-            {
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <h5 class="card-title">
-                                @for (int i = 0; i < review.StarRating; i++)
-                                {
-                                    <span class="text-warning">★</span>
-                                }
-                            </h5>
-                            <small class="text-muted">@review.ReviewDate.ToString("MMM dd, yyyy")</small>
-                        </div>
-                        <p class="card-text">@review.ReviewContent</p>
-                        <small class="text-muted">By: @review.User?.UserName</small>
-                    </div>
-                </div>
-            }
-        }
-        else
-        {
-            <p>No reviews yet.</p>
-        }
-    </div>
+        <button type="submit" class="btn btn-primary">Submit Review</button>
+    </form>
 </div>
-        @if (Model.Reviews != null && Model.Reviews.Any())
+@*pana aici*@
+
+<div class="container mt-5">
+    <h2>Product Reviews</h2>
+    @if (Model.Reviews != null && Model.Reviews.Any())
+    {
+        foreach (var review in Model.Reviews.OrderByDescending(r => r.ReviewDate))
         {
-            foreach (var review in Model.Reviews.OrderByDescending(r => r.ReviewDate))
-            {
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <h5 class="card-title">
-                                @for (int i = 0; i < review.StarRating; i++)
-                                {
-                                    <span class="text-warning">★</span>
-                                }
-                            </h5>
-                            <small class="text-muted">@review.ReviewDate.ToString("MMM dd, yyyy")</small>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <h5 class="card-title">@review.ReviewerName</h5>
+                        <div>
+                            @for (int i = 0; i < review.StarRating; i++)
+                            {
+                                <span class="text-warning">★</span>
+                            }
+                            @for (int i = review.StarRating; i < 5; i++)
+                            {
+                                <span class="text-secondary">☆</span>
+                            }
                         </div>
-                        <p class="card-text">@review.ReviewContent</p>
-                        <small class="text-muted">By: @review.User?.UserName</small>
                     </div>
+                    <h6 class="card-subtitle mb-2 text-muted">
+                        @review.ReviewDate.ToString("MMMM dd, yyyy")
+                    </h6>
+                    <p class="card-text">@review.ReviewContent</p>
                 </div>
-            }
+            </div>
         }
-        else
-        {
-            <p>No reviews yet.</p>
-        }
-    </div>
+    }
+    else
+    {
+        <p class="text-muted">No reviews yet. Be the first to review this product!</p>
+    }
 </div>

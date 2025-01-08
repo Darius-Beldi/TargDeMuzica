@@ -45,7 +45,20 @@ namespace TargDeMuzica.Controllers
 
         public ActionResult Show(int id)
         {
-            Product product = db.Products.Find(id);
+
+            Product product = db.Products
+                .Include(p => p.Reviews)
+                .Include(p => p.MusicSuport)
+                .Include(p => p.Artist)
+                .FirstOrDefault(p => p.ProductID == id);
+
+            if (product != null && product.Reviews != null && product.Reviews.Any())
+            {
+                // Calculate average star rating
+                product.ProductScore = (float)product.Reviews.Average(r => r.StarRating);
+                db.SaveChanges();  // Save the updated score to the database
+            }
+
             return View(product);
         }
 
