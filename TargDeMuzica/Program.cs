@@ -17,6 +17,8 @@ builder.Services.AddDefaultIdentity<TargDeMuzica.Models.ApplicationUser>(options
 
 builder.Services.AddControllersWithViews();
 
+
+
 var app = builder.Build();
 // PASUL 5 - useri si roluri
 using (var scope = app.Services.CreateScope())

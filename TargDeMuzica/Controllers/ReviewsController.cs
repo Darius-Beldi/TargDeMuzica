@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TargDeMuzica.Data;
 using TargDeMuzica.Models;
 
@@ -36,13 +37,11 @@ namespace TargDeMuzica.Controllers
         {
             return View();
         }
-
+        [Authorize(Roles = "UserI, Colaborator, Administrator")]
         [HttpPost]
         public ActionResult New(Review rev)
         {
 
-
-// rev.ReviewDate = DateTime.Now;
 
             if(ModelState.IsValid)
             {
@@ -50,12 +49,16 @@ namespace TargDeMuzica.Controllers
                 db.Reviews.Add(rev);
                 db.SaveChanges();
                 TempData["message"] = "Review-ul a fost adaugat";
+
+                
+
+
                 return RedirectToAction("Show", "Products", new { id = rev.ProductId });
 
             }
-
+            else
             {
-                return View(rev);
+                return RedirectToAction("Show", "Products", new { id = rev.ProductId });
             }
         }
 

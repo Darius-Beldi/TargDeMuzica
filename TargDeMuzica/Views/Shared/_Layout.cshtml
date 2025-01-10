@@ -173,15 +173,21 @@
                         <li class="nav-item">
                             <a class="nav-link" href="/Home/Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/Reviews/Index">Reviews</a>
-                        </li>
+
+                        
                         <li class="nav-item">
                             <a class="nav-link" href="/Artists/Index">Artists</a>
                         </li>
+
                         <li class="nav-item">
                             <a class="nav-link" href="/Products/Index">Products</a>
                         </li>
+                        @if (User.IsInRole("Administrator") || User.IsInRole("Colaborator"))
+                        {   <li class="nav-item">
+                                <a class="nav-link" href="/Products/Submit">Propune produs nou</a>
+                            </li>
+                        }
+
                     </ul>
                     <ul class="navbar-nav">
                         @if (SignInManager.IsSignedIn(User))
