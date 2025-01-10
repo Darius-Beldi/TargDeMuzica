@@ -40,10 +40,45 @@ namespace TargDeMuzica.Controllers
             var products = from product in db.Products
                           orderby product.ProductName
                           select product;
+            var search = "";
+            // MOTOR DE CAUTARE
+            if (Convert.ToString(HttpContext.Request.Query["search"]) !=
+            null)
+            {
+
+                // eliminam spatiile libere
+                search =
+                Convert.ToString(HttpContext.Request.Query["search"]).Trim();
+                // Cautare in articol (Title si Content)
+                List<int> productIds = db.Products.Where
+
+                (
+                at => at.ProductName.Contains(search)
+                
+                ).Select(a => a.ProductID).ToList();
+                
+                // Lista articolelor care contin cuvantul cautat
+                // fie in articol -> Title si Content
+                // fie in comentarii -> Content
+                products = db.Products.Where(product =>
+                productIds.Contains(product.ProductID))
+                .OrderBy(a => a.ProductName);
+            }
+            ViewBag.SearchString = search;
+            if (search != "")
+            {
+                ViewBag.PaginationBaseUrl = "/Products/Index/?search="
+                + search + "&page";
+            }
+            else
+            {
+                ViewBag.PaginationBaseUrl = "/Proucts/Index/?page";
+            }
 
             ViewBag.Products = products;
             return View();
-        }
+        
+         }
 
 
 

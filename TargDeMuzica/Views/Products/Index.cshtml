@@ -1,49 +1,72 @@
-﻿
+﻿<form method="GET">
+    <div class="input-group mb-3">
+        <input type="text" class="form-control"
+               placeholder="Search Products" name="search"
+               value="@ViewBag.SearchString">
+        <button class="btn btn-outline-success" type="submit">
+            Search
+        </button>
+    </div>
+</form>
 
-<h2>@ViewBag.ReviewContent</h2>
-<br />
-
-<a class="btn btn-success" asp-action="Submit" asp-controller="Products">Adauga produs</a>
+<div class="mb-4">
+    <a class="btn btn-success" asp-action="Submit" asp-controller="Products">Add New Product</a>
+</div>
 
 @if (TempData.ContainsKey("message"))
 {
-    <h1>
-        @ViewBag.
+    <div class="alert alert-success" role="alert">
+        @ViewBag.message
+    </div>
+}
 
-        <h2>@ViewBag.ReviewContent</h2>
-        <br />
-
-        @if (TempData.ContainsKey("message"))
+<div class="container">
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+        @foreach (var product in ViewBag.Products)
         {
-            <h1>@ViewBag.message</h1>
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    @if (!string.IsNullOrEmpty(product.ProductImageLocation))
+                    {
+                        <img src="@product.ProductImageLocation" class="card-img-top" alt="@product.ProductName"
+                             style="height: 200px; object-fit: cover;">
+                    }
+                    else
+                    {
+                        <div class="text-center p-3 bg-light">
+                            <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
+                        </div>
+                    }
+
+                    <div class="card-body">
+                        <h5 class="card-title">@product.ProductName</h5>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge bg-primary">$@product.ProductPrice</span>
+                            @if (product.ProductScore is not null)
+                            {
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-star-fill text-warning me-1"></i>
+                                    <span>@product.ProductScore.Value.ToString("0.0")</span>
+                                </div>
+                            }
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a class="btn btn-outline-primary btn-sm"
+                               asp-action="Show"
+                               asp-controller="Products"
+                               asp-route-id="@product.ProductID">
+                                View Details
+                            </a>
+                            <a class="btn btn-outline-secondary btn-sm"
+                               asp-action="Edit"
+                               asp-controller="Products"
+                               asp-route-id="@product.ProductID">
+                                Edit
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         }
-
-        <br />
-        <br />
-
-
-
-        <br />
-    </h1>
-}
-@foreach (var product in ViewBag.Products)
-{
-    @Html.Label("ProductName", "Nume")
-    <p>@product.ProductName</p>
-
-    @Html.Label("ProductPrice", "Pret")
-    <p>@product.ProductPrice</p>
-
-    @Html.Label("ProductScore", "Scor")
-    <p>@product.ProductPrice</p>
-
-    @Html.Label("ProductImageLocation", "Imagine")
-    <img src="@product.ProductImageLocation" class="img-fluid" />
-    <a class="btn alert-success" asp-action="Show" asp-controller="Products" asp-route-id="@product.ProductID">Afisare produs</a>
-    <a class="btn alert-success" asp-action="Edit" asp-controller="Products" asp-route-id="@product.ProductID">Editare produs</a>
-
-    <br />
-    <hr />
-    <br />
-}
-<br />
+    </div>
+</div>

@@ -6,7 +6,7 @@ namespace TargDeMuzica.Models
         [Key]
         public int ReviewID { get; set; }
         
-        public string ReviewContent { get; set; }
+        public string? ReviewContent { get; set; }
         [Required(ErrorMessage = "Numele de utilizator este obligatoriu!")]
 
         public string ReviewerName { get; set; }

@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace TargDeMuzica.Data.Migrations
+namespace TargDeMuzica.Migrations
 {
     /// <inheritdoc />
     public partial class nullable : Migration
@@ -11,8 +11,8 @@ namespace TargDeMuzica.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
-                name: "ProductImageLocation",
-                table: "Products",
+                name: "ReviewContent",
+                table: "Reviews",
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
@@ -23,8 +23,8 @@ namespace TargDeMuzica.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
-                name: "ProductImageLocation",
-                table: "Products",
+                name: "ReviewContent",
+                table: "Reviews",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "",

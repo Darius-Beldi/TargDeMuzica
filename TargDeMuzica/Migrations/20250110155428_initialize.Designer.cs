@@ -9,11 +9,11 @@ using TargDeMuzica.Data;
 
 #nullable disable
 
-namespace TargDeMuzica.Data.Migrations
+namespace TargDeMuzica.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250107150256_temp1")]
-    partial class temp1
+    [Migration("20250110155428_initialize")]
+    partial class initialize
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -177,6 +177,21 @@ namespace TargDeMuzica.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("MusicSuportProduct", b =>
+                {
+                    b.Property<int>("MusicSuportID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductsProductID")
+                        .HasColumnType("int");
+
+                    b.HasKey("MusicSuportID", "ProductsProductID");
+
+                    b.HasIndex("ProductsProductID");
+
+                    b.ToTable("MusicSuportProduct");
+                });
+
             modelBuilder.Entity("TargDeMuzica.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -291,18 +306,24 @@ namespace TargDeMuzica.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RequestID"));
 
-                    b.Property<int>("ProductID")
+                    b.Property<string>("AdminComment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProposedProductProductID")
                         .HasColumnType("int");
 
-                    b.Property<bool>("RequestApproved")
-                        .HasColumnType("bit");
+                    b.Property<DateTime>("RequestDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("RequestID");
 
-                    b.HasIndex("ProductID");
+                    b.HasIndex("ProposedProductProductID");
 
                     b.HasIndex("UserId");
 
@@ -317,8 +338,9 @@ namespace TargDeMuzica.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MusicSuportID"));
 
-                    b.Property<int>("MusicSuportName")
-                        .HasColumnType("int");
+                    b.Property<string>("MusicSuportName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("MusicSuportID");
 
@@ -333,13 +355,10 @@ namespace TargDeMuzica.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductID"));
 
-                    b.Property<int>("ArtistID")
+                    b.Property<int?>("ArtistID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("IncomingRequestRequestID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MusicSuportID")
+                    b.Property<int?>("MusicSuportID")
                         .HasColumnType("int");
 
                     b.Property<string>("ProductDescription")
@@ -353,7 +372,6 @@ namespace TargDeMuzica.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProductImageLocation")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProductName")
@@ -376,11 +394,6 @@ namespace TargDeMuzica.Data.Migrations
 
                     b.HasIndex("ArtistID");
 
-                    b.HasIndex("IncomingRequestRequestID");
-
-                    b.HasIndex("MusicSuportID")
-                        .IsUnique();
-
                     b.HasIndex("UserId");
 
                     b.ToTable("Products");
@@ -394,7 +407,7 @@ namespace TargDeMuzica.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewID"));
 
-                    b.Property<int?>("ProductID")
+                    b.Property<int?>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<string>("ReviewContent")
@@ -404,6 +417,10 @@ namespace TargDeMuzica.Data.Migrations
                     b.Property<DateTime>("ReviewDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("ReviewerName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("StarRating")
                         .HasColumnType("int");
 
@@ -412,7 +429,7 @@ namespace TargDeMuzica.Data.Migrations
 
                     b.HasKey("ReviewID");
 
-                    b.HasIndex("ProductID");
+                    b.HasIndex("ProductId");
 
                     b.HasIndex("UserId");
 
@@ -485,6 +502,21 @@ namespace TargDeMuzica.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("MusicSuportProduct", b =>
+                {
+                    b.HasOne("TargDeMuzica.Models.MusicSuport", null)
+                        .WithMany()
+                        .HasForeignKey("MusicSuportID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TargDeMuzica.Models.Product", null)
+                        .WithMany()
+                        .HasForeignKey("ProductsProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("TargDeMuzica.Models.Cart", b =>
                 {
                     b.HasOne("TargDeMuzica.Models.ApplicationUser", "User")
@@ -496,9 +528,9 @@ namespace TargDeMuzica.Data.Migrations
 
             modelBuilder.Entity("TargDeMuzica.Models.IncomingRequest", b =>
                 {
-                    b.HasOne("TargDeMuzica.Models.Product", "Product")
+                    b.HasOne("TargDeMuzica.Models.Product", "ProposedProduct")
                         .WithMany()
-                        .HasForeignKey("ProductID")
+                        .HasForeignKey("ProposedProductProductID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -506,7 +538,7 @@ namespace TargDeMuzica.Data.Migrations
                         .WithMany()
                         .HasForeignKey("UserId");
 
-                    b.Navigation("Product");
+                    b.Navigation("ProposedProduct");
 
                     b.Navigation("User");
                 });
@@ -515,27 +547,13 @@ namespace TargDeMuzica.Data.Migrations
                 {
                     b.HasOne("TargDeMuzica.Models.Artist", "Artist")
                         .WithMany("Products")
-                        .HasForeignKey("ArtistID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TargDeMuzica.Models.IncomingRequest", null)
-                        .WithMany("ProductsToBeReviewed")
-                        .HasForeignKey("IncomingRequestRequestID");
-
-                    b.HasOne("TargDeMuzica.Models.MusicSuport", "MusicSuport")
-                        .WithOne("Product")
-                        .HasForeignKey("TargDeMuzica.Models.Product", "MusicSuportID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ArtistID");
 
                     b.HasOne("TargDeMuzica.Models.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
 
                     b.Navigation("Artist");
-
-                    b.Navigation("MusicSuport");
 
                     b.Navigation("User");
                 });
@@ -544,7 +562,7 @@ namespace TargDeMuzica.Data.Migrations
                 {
                     b.HasOne("TargDeMuzica.Models.Product", "Product")
                         .WithMany("Reviews")
-                        .HasForeignKey("ProductID");
+                        .HasForeignKey("ProductId");
 
                     b.HasOne("TargDeMuzica.Models.ApplicationUser", "User")
                         .WithMany()
@@ -558,17 +576,6 @@ namespace TargDeMuzica.Data.Migrations
             modelBuilder.Entity("TargDeMuzica.Models.Artist", b =>
                 {
                     b.Navigation("Products");
-                });
-
-            modelBuilder.Entity("TargDeMuzica.Models.IncomingRequest", b =>
-                {
-                    b.Navigation("ProductsToBeReviewed");
-                });
-
-            modelBuilder.Entity("TargDeMuzica.Models.MusicSuport", b =>
-                {
-                    b.Navigation("Product")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("TargDeMuzica.Models.Product", b =>
