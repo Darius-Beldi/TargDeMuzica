@@ -15,6 +15,7 @@ namespace TargDeMuzica.Data
 		public DbSet<IncomingRequest> IncomingRequests { get; set; }
 		public DbSet<MusicSuport> MusicSuports { get; set; }
 		public DbSet<Product> Products { get; set; }
-		public DbSet<Review> Reviews { get; set; }	
+		public DbSet<Review> Reviews { get; set; }
+    
     }
 }

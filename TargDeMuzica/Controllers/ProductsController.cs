@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Specialized;
 using System.Composition;
@@ -30,24 +31,122 @@ namespace TargDeMuzica.Controllers
         }
 
 
-        
+        /*
         public IActionResult Index()
         {
             if (TempData.ContainsKey("message"))
             {
                 ViewBag.message = TempData["message"].ToString();
             }
-            var products = from product in db.Products
-                          orderby product.ProductName
-                          select product;
+
+            
+
+            var pendingProductIds = db.IncomingRequests
+        .Where(r => r.Status == IncomingRequest.RequestStatus.Pending)
+        .Select(r => r.ProposedProduct.ProductID);
+
+            var products = db.Products
+                .Where(p => !pendingProductIds.Contains(p.ProductID))
+                .OrderBy(p => p.ProductName);
+
+
+            var search = "";
+            // MOTOR DE CAUTARE
+            if (Convert.ToString(HttpContext.Request.Query["search"]) !=
+            null)
+            {
+
+                // eliminam spatiile libere
+                search =
+                Convert.ToString(HttpContext.Request.Query["search"]).Trim();
+                // Cautare in articol (Title si Content)
+                List<int> productIds = db.Products.Where
+
+                (
+                at => at.ProductName.Contains(search)
+                
+                ).Select(a => a.ProductID).ToList();
+                
+                // Lista articolelor care contin cuvantul cautat
+                // fie in articol -> Title si Content
+                // fie in comentarii -> Content
+                products = db.Products.Where(product =>
+                productIds.Contains(product.ProductID))
+                .OrderBy(a => a.ProductName);
+            }
+            ViewBag.SearchString = search;
+            if (search != "")
+            {
+                ViewBag.PaginationBaseUrl = "/Products/Index/?search="
+                + search + "&page";
+            }
+            else
+            {
+                ViewBag.PaginationBaseUrl = "/Proucts/Index/?page";
+            }
 
             ViewBag.Products = products;
             return View();
+        
+         }*/
+
+
+
+        public IActionResult Index(string search, string sortBy = "name", string sortOrder = "asc")
+        {
+            if (TempData.ContainsKey("message"))
+            {
+                ViewBag.message = TempData["message"].ToString();
+            }
+
+            var pendingProductIds = db.IncomingRequests
+                .Where(r => r.Status == IncomingRequest.RequestStatus.Pending)
+                .Select(r => r.ProposedProduct.ProductID);
+
+            // Start with base query
+            var productsQuery = db.Products
+                .Where(p => !pendingProductIds.Contains(p.ProductID));
+
+            // Apply search filter if provided
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Trim();
+                productsQuery = productsQuery.Where(p => p.ProductName.Contains(search));
+            }
+
+            // Apply sorting
+            productsQuery = sortBy.ToLower() switch
+            {
+                "price" => sortOrder.ToLower() == "asc"
+                    ? productsQuery.OrderBy(p => p.ProductPrice)
+                    : productsQuery.OrderByDescending(p => p.ProductPrice),
+                "rating" => sortOrder.ToLower() == "asc"
+                    ? productsQuery.OrderBy(p => p.ProductScore)
+                    : productsQuery.OrderByDescending(p => p.ProductScore),
+                _ => sortOrder.ToLower() == "asc"  // Default sort by name
+                    ? productsQuery.OrderBy(p => p.ProductName)
+                    : productsQuery.OrderByDescending(p => p.ProductName)
+            };
+
+            var products = productsQuery.ToList();
+
+            // Set ViewBag properties for the view
+            ViewBag.Products = products;
+            ViewBag.SearchString = search;
+            ViewBag.CurrentSort = sortBy;
+            ViewBag.CurrentSortOrder = sortOrder;
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                ViewBag.PaginationBaseUrl = $"/Products/Index/?search={search}&sortBy={sortBy}&sortOrder={sortOrder}&page";
+            }
+            else
+            {
+                ViewBag.PaginationBaseUrl = $"/Products/Index/?sortBy={sortBy}&sortOrder={sortOrder}&page";
+            }
+
+            return View();
         }
-
-
-
-
 
 
 
@@ -258,6 +357,7 @@ namespace TargDeMuzica.Controllers
                 return RedirectToAction("Index");
             }
         }
+        
         // Modified ProductsController.cs - New method
         [Authorize(Roles = "Colaborator,Administrator")]
         public ActionResult Submit()
@@ -349,3 +449,6 @@ namespace TargDeMuzica.Controllers
         }
     }
 }
+
+
+

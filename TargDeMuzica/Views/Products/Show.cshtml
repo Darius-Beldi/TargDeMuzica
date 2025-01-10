@@ -1,5 +1,7 @@
 ﻿@model TargDeMuzica.Models.Product
-
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
 <style>
 
     .fixed-bottom-right {
@@ -15,11 +17,7 @@
     }
 
     :root {
-        --primary-color: #4a90e2;
-        --secondary-color: #f9fae0;
-        --accent-color: #34495e;
-        --text-color: #2c3e50;
-        --light-gray: #f9fae0;
+    
     }
 
     body {
@@ -86,14 +84,13 @@
     }
 
     .review-form {
-        background-color: #feffef;
+  
         padding: 2rem;
         border-radius: 10px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
 
     .review-card {
-        background-color: #feffef;
         border-radius: 10px;
         margin-bottom: 1.5rem;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -114,7 +111,12 @@
 </style>
 
 <h1 class="product-title">@Model.ProductName</h1>
-<a class="btn alert-success" asp-action="Delete" asp-controller="Products" asp-route-id="@Model.ProductID">Stergere produs</a>
+@if (User.IsInRole("Administrator") || (User.IsInRole("Colaborator") && @Model.User?.Id == User.FindFirstValue(ClaimTypes.NameIdentifier)))
+
+{
+    <a class="btn alert-success" asp-action="Delete" asp-controller="Products" asp-route-id="@Model.ProductID">Stergere produs</a>
+}
+
 
 <div class="product-container">
     <div class="row">
@@ -167,33 +169,44 @@
 <div class="review-section">
     <h2 class="mb-4">Add a Review</h2>
     <div class="review-form">
-        <form asp-controller="Reviews" asp-action="New" method="post">
-            <input type="hidden" name="ProductId" value="@Model.ProductID" />
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <form asp-controller="Reviews" asp-action="New" method="post">
+                <input type="hidden" name="ProductId" value="@Model.ProductID" />
+                <input type="hidden" name="ReturnUrl" value="@Context.Request.Path" />
+            
 
-            <div class="form-group mb-3">
-                <label for="ReviewerName" class="form-label">Your Name</label>
-                <input type="text" class="form-control" id="ReviewerName" name="ReviewerName" required />
-            </div>
+                <div class="form-group mb-3">
+                    <label for="ReviewerName" class="form-label">Your Name</label>
+                    <input type="text" class="form-control" id="ReviewerName" name="ReviewerName" required />
+                </div>
 
-            <div class="form-group mb-3">
-                <label for="ReviewContent" class="form-label">Review Content</label>
-                <textarea class="form-control" id="ReviewContent" name="ReviewContent" rows="4"
-                          placeholder="Share your thoughts about this product..."></textarea>
-            </div>
+                <div class="form-group mb-3">
+                    <label for="ReviewContent" class="form-label">Review Content</label>
+                    <textarea class="form-control" id="ReviewContent" name="ReviewContent" rows="4"
+                              placeholder="Share your thoughts about this product..."></textarea>
+                </div>
 
-            <div class="form-group mb-3">
-                <label for="StarRating" class="form-label">Rating</label>
-                <select class="form-control" id="StarRating" name="StarRating" required>
-                    <option value="" disabled selected>Select a rating</option>
-                    @for (int i = 1; i <= 5; i++)
-                    {
-                        <option value="@i">@i Star@(i > 1 ? "s" : "")</option>
-                    }
-                </select>
-            </div>
+                <div class="form-group mb-3">
+                    <label for="StarRating" class="form-label">Rating</label>
+                    <select class="form-control" id="StarRating" name="StarRating" required>
+                        <option value="" disabled selected>Select a rating</option>
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <option value="@i">@i Star@(i > 1 ? "s" : "")</option>
+                        }
+                    </select>
+                </div>
 
-            <button type="submit" class="btn btn-custom">Submit Review</button>
-        </form>
+                <button type="submit" class="btn btn-custom">Submit Review</button>
+            </form>
+        }
+        else
+        {
+            <div class="alert alert-warning">
+				You must be signed in to leave a review.
+			</div>
+        }
     </div>
 
     <div class="mt-5">
