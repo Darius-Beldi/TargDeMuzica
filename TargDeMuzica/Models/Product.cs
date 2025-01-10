@@ -14,7 +14,7 @@ namespace TargDeMuzica.Models
         
         public float ProductPrice { get; set; }
         public int ProductStock { get; set; }
-        public string ProductImageLocation {  get; set; }
+        public string? ProductImageLocation {  get; set; }
         public float? ProductScore { get; set; }
 
         public string? ProductGenresTemp { get; set; }
