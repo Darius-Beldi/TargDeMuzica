@@ -73,7 +73,7 @@ namespace TargDeMuzica.Controllers
             request.Status = approved ? RequestStatus.Approved : RequestStatus.Rejected;
             request.AdminComment = comment;
 
-            if (approved)
+            /*if (approved)
             {
                 // Create a new product instance and copy the properties
                 var newProduct = new Product
@@ -93,7 +93,7 @@ namespace TargDeMuzica.Controllers
 
                 // Add the new product to the database
                 _db.Products.Add(newProduct);
-            }
+            }*/
 
             await _db.SaveChangesAsync();
 

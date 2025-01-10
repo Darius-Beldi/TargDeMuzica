@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TargDeMuzica.Migrations
 {
     /// <inheritdoc />
-    public partial class initialize : Migration
+    public partial class _1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -317,7 +317,7 @@ namespace TargDeMuzica.Migrations
                 {
                     ReviewID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ReviewContent = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReviewContent = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ReviewerName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ProductId = table.Column<int>(type: "int", nullable: true),
                     ReviewDate = table.Column<DateTime>(type: "datetime2", nullable: false),
