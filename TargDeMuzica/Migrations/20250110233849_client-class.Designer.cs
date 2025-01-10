@@ -12,8 +12,8 @@ using TargDeMuzica.Data;
 namespace TargDeMuzica.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250110215854_clienti12")]
-    partial class clienti12
+    [Migration("20250110233849_client-class")]
+    partial class clientclass
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

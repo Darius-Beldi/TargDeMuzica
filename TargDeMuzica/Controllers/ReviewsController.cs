@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TargDeMuzica.Data;
 using TargDeMuzica.Models;
@@ -8,12 +9,19 @@ namespace TargDeMuzica.Controllers
     public class ReviewsController : Controller
     {
         private readonly ApplicationDbContext db;
+        private readonly UserManager<ApplicationUser> userManager;
+        private readonly RoleManager<IdentityRole> roleManager;
 
-
-        public ReviewsController(ApplicationDbContext context)
+        public ReviewsController(
+            ApplicationDbContext _db,
+            UserManager<ApplicationUser> _userManager,
+            RoleManager<IdentityRole> _roleManager)
         {
-            db = context;
+            db = _db;
+            userManager = _userManager;
+            roleManager = _roleManager;
         }
+
         public IActionResult Index()
         {
             if (TempData.ContainsKey("message"))
@@ -39,13 +47,14 @@ namespace TargDeMuzica.Controllers
         }
         [Authorize(Roles = "UserI, Colaborator, Administrator")]
         [HttpPost]
-        public ActionResult New(Review rev)
+        public async Task<ActionResult> New(Review rev)
         {
 
 
             if(ModelState.IsValid)
             {
                 rev.ReviewDate = DateTime.Now;
+                rev.User = await userManager.GetUserAsync(User);
                 db.Reviews.Add(rev);
                 db.SaveChanges();
                 TempData["message"] = "Review-ul a fost adaugat";

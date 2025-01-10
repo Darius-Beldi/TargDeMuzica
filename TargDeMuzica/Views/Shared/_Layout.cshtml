@@ -162,7 +162,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-light fixed-top">
             <div class="container">
-                <a class="navbar-brand" href="#">
+                <a class="navbar-brand" href="/Products/Index">
                     <i class="fas fa-music me-2"></i>TargDeMuzica
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
@@ -170,27 +170,29 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/Home/Index">Home</a>
-                        </li>
-
                         
-                        <li class="nav-item">
-                            <a class="nav-link" href="/Artists/Index">Artists</a>
-                        </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link" href="/Products/Index">Products</a>
-                        </li>
+                        @if (User.IsInRole("Administrator"))
+                        {
+                                <li class="nav-item">
+                                <a class="nav-link" href="/Artists/Index">Artists</a>
+                            </li>
+                        }
                         @if (User.IsInRole("Administrator") || User.IsInRole("Colaborator"))
                         {   <li class="nav-item">
                                 <a class="nav-link" href="/Products/Submit">Propune produs nou</a>
                             </li>
                         }
-                        @if (User.IsInRole("Administrator") || User.IsInRole("Colaborator"))
+                        @if (User.IsInRole("Administrator"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Clients" asp-action="Index">Utilizatori inregistrati</a>
+                                <a class="nav-link" asp-controller="Clients" asp-action="Index">Utilizatori inregistrati</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Administrator"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="/IncomingRequests/Index">Produse in asteptare</a>
                             </li>
                         }
 

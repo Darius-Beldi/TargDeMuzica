@@ -8,6 +8,11 @@
       "type": "mssql",
       "connectionId": "ConnectionStrings:dariusdb",
       "dynamicId": null
+    },
+    "mssql3": {
+      "type": "mssql",
+      "connectionId": "ConnectionStrings:dariustarg",
+      "dynamicId": null
     }
   }
 }

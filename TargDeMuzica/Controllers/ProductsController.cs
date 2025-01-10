@@ -286,6 +286,8 @@ namespace TargDeMuzica.Controllers
         public ActionResult Edit(int id)
         {
             Product prod = db.Products.Find(id);
+            prod.MusicSup = GetAllMusicSup();
+            prod.ArtistList = GetAllArtists();
             return View(prod);
         }
 
@@ -320,6 +322,8 @@ namespace TargDeMuzica.Controllers
             }
             catch (Exception e)
             {
+                prod.MusicSup = GetAllMusicSup();
+                prod.ArtistList = GetAllArtists();
                 return View(requestProd);
             }
         }
