@@ -7,18 +7,19 @@ namespace TargDeMuzica.Models
         [Key]
         public int RequestID { get; set; }
 
-        public bool RequestApproved { get; set; }
+        public DateTime RequestDate { get; set; }
+        public RequestStatus Status { get; set; }
+        public string? AdminComment { get; set; }
 
-        //un vector unde:
-        //pe pozitia 0 este produsul vechi
-        //pe pozitia 1 este produsul nou
-        //idee: cand se afiseaza requestul trebuie afisate
-        //ambele produse pentru ca adminul sa vada exact ce s a schimbat
-        public ICollection<Product> ProductsToBeReviewed { get; set; }
-        public virtual Product Product { get; set; }
-
-        //foreign key user
+        public virtual Product ProposedProduct { get; set; }
         public virtual ApplicationUser User { get; set; }
 
+
+        public enum RequestStatus
+        {
+            Approved,
+            Pending,
+            Rejected
+        }
     }
 }

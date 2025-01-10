@@ -3,7 +3,7 @@
 <h2>@ViewBag.ReviewContent</h2>
 <br />
 
-<a class="btn btn-success" asp-action="New" asp-controller="Products">Adauga produs</a>
+<a class="btn btn-success" asp-action="Submit" asp-controller="Products">Adauga produs</a>
 
 @if (TempData.ContainsKey("message"))
 {
@@ -38,8 +38,7 @@
     <p>@product.ProductPrice</p>
 
     @Html.Label("ProductImageLocation", "Imagine")
-    <p>@product.ProductImageLocation</p>
-
+    <img src="@product.ProductImageLocation" class="img-fluid" />
     <a class="btn alert-success" asp-action="Show" asp-controller="Products" asp-route-id="@product.ProductID">Afisare produs</a>
     <a class="btn alert-success" asp-action="Edit" asp-controller="Products" asp-route-id="@product.ProductID">Editare produs</a>
 

@@ -1,104 +1,242 @@
 ﻿@model TargDeMuzica.Models.Product
 
+<style>
 
-<h1>@Model.ProductName</h1>
+    .fixed-bottom-right {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
 
-<div class="row">
-    <div class="col-md-6">
-        <img src="@Model.ProductImageLocation" class="img-fluid" />
-    </div>
-    <div class="col-md-6">
-        <dl class="row">
-            <dt class="col-sm-4">Description:</dt>
-            <dd class="col-sm-8">@Model.ProductDescription</dd>
+    .btn-float {
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        padding: 12px 24px;
+    }
 
-            <dt class="col-sm-4">Price:</dt>
-            <dd class="col-sm-8">@Model.ProductPrice.ToString("C")</dd>
+    :root {
+        --primary-color: #4a90e2;
+        --secondary-color: #f9fae0;
+        --accent-color: #34495e;
+        --text-color: #2c3e50;
+        --light-gray: #f9fae0;
+    }
 
-            <dt class="col-sm-4">Stock:</dt>
-            <dd class="col-sm-8">@Model.ProductStock</dd>
+    body {
+        color: var(--text-color);
+        background-color: #f8f8be;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-            <dt class="col-sm-4">Score:</dt>
-            <dd class="col-sm-8">@(Model.ProductScore.HasValue ? Model.ProductScore.Value.ToString("F1") : "Not Rated")</dd>
+    .product-title {
+        color: var(--accent-color);
+        font-size: 2.5rem;
+        margin: 2rem 0;
+        text-align: center;
+        font-weight: 600;
+    }
 
-            <dt class="col-sm-4">Genres:</dt>
-            <dd class="col-sm-8">@(Model.ProductGenres != null ? string.Join(", ", Model.ProductGenres) : "None")</dd>
+    .product-container {
+        background-color: var(--secondary-color);
+        border-radius: 15px;
+        padding: 2rem;
+        margin: 2rem 0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
 
-            <dt class="col-sm-4">Music Support:</dt>
-            <dd class="col-sm-8">@(Model.MusicSuport != null ? string.Join(", ", Model.MusicSuport.Select(ms => ms.MusicSuportName)) : "None")</dd>
+    .product-image {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
 
-            <dt class="col-sm-4">Artist:</dt>
-            <dd class="col-sm-8">@(Model.Artist != null ? Model.Artist.ArtistName : "Unknown")</dd>
-        </dl>
+    .product-details dt {
+        color: var(--accent-color);
+        font-weight: 600;
+        padding: 0.5rem 0;
+    }
 
-        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-    </div>
-</div>
+    .product-details dd {
+        margin-bottom: 1rem;
+    }
 
+    .btn-custom {
+        background-color: var(--primary-color);
+        color: #f9fae0;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        border: none;
+        transition: all 0.3s ease;
+    }
 
-@*DE AICI IN JOS USER INREGISTRAT SAU MAI SUS*@
+        .btn-custom:hover {
+            background-color: #357abd;
+            transform: translateY(-2px);
+        }
 
-<h2>Add a Review</h2>
-<div class="container">
-    <form asp-controller="Reviews" asp-action="New" method="post">
-        <input type="hidden" name="ProductId" value="@Model.ProductID" />
+    .btn-secondary {
+        background-color: var(--accent-color);
+    }
 
-        <div class="form-group">
-            <label for="ReviewerName">Your Name</label>
-            <input type="text" class="form-control" id="ReviewerName" name="ReviewerName" required />
-        </div>
+    .review-section {
+        background-color: var(--light-gray);
+        padding: 2rem;
+        border-radius: 15px;
+        margin-top: 3rem;
+    }
 
-        <div class="form-group">
-            <label for="ReviewContent">Review Content</label>
-            <textarea class="form-control" id="ReviewContent" name="ReviewContent" rows="4" placeholder="Share your thoughts about this product..."></textarea>
-        </div>
-        <div class="form-group">
-            <label for="StarRating">Rating</label>
-            <select class="form-control" id="StarRating" name="StarRating" required>
-                <option value="" disabled selected>Select a rating</option>
-                @for (int i = 1; i <= 5; i++)
+    .review-form {
+        background-color: #feffef;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .review-card {
+        background-color: #feffef;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s ease;
+    }
+
+        .review-card:hover {
+            transform: translateY(-3px);
+        }
+
+    .star-rating {
+        color: #ffd700;
+    }
+
+    .empty-star {
+        color: #d1d1d1;
+    }
+</style>
+
+<h1 class="product-title">@Model.ProductName</h1>
+<a class="btn alert-success" asp-action="Delete" asp-controller="Products" asp-route-id="@Model.ProductID">Stergere produs</a>
+
+<div class="product-container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="product-image">
+                @if (Model.ProductImageLocation.Contains(".mp4") || Model.ProductImageLocation.Contains(".mov"))
                 {
-                    <option value="@i">@i Star@(i > 1 ? "s" : "")</option>
+                    <video width="100%" height="450" controls class="rounded">
+                        <source src="@Model.ProductImageLocation" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
                 }
-            </select>
+                else
+                {
+                    <img src="@Model.ProductImageLocation" alt="Product image" class="img-fluid rounded" style="width:100%; height: 450px; object-fit: cover" />
+                }
+            </div>
         </div>
+        <div class="col-md-6">
+            <dl class="row product-details">
+                <dt class="col-sm-4">Description:</dt>
+                <dd class="col-sm-8">@Model.ProductDescription</dd>
 
-        <button type="submit" class="btn btn-primary">Submit Review</button>
-    </form>
+                <dt class="col-sm-4">Price:</dt>
+                <dd class="col-sm-8 h4 text-primary">@Model.ProductPrice.ToString("C")</dd>
+
+                <dt class="col-sm-4">Stock:</dt>
+                <dd class="col-sm-8">@Model.ProductStock</dd>
+
+                <dt class="col-sm-4">Score:</dt>
+                <dd class="col-sm-8">@(Model.ProductScore.HasValue ? Model.ProductScore.Value.ToString("F1") : "Not Rated")</dd>
+
+                <dt class="col-sm-4">Genres:</dt>
+                <dd class="col-sm-8">@(Model.ProductGenres != null ? string.Join(", ", Model.ProductGenres) : "None")</dd>
+
+                <dt class="col-sm-4">Music Support:</dt>
+                <dd class="col-sm-8">@(Model.MusicSuport != null ? string.Join(", ", Model.MusicSuport.Select(ms => ms.MusicSuportName)) : "None")</dd>
+
+                <dt class="col-sm-4">Artist:</dt>
+                <dd class="col-sm-8">@(Model.Artist != null ? Model.Artist.ArtistName : "Unknown")</dd>
+            </dl>
+
+            <div class="fixed-bottom-right">
+                <a asp-action="Index" class="btn btn-custom btn-secondary btn-float">Back to List</a>
+            </div>
+        </div>
+    </div>
 </div>
-@*pana aici*@
 
-<div class="container mt-5">
-    <h2>Product Reviews</h2>
-    @if (Model.Reviews != null && Model.Reviews.Any())
-    {
-        foreach (var review in Model.Reviews.OrderByDescending(r => r.ReviewDate))
+<div class="review-section">
+    <h2 class="mb-4">Add a Review</h2>
+    <div class="review-form">
+        <form asp-controller="Reviews" asp-action="New" method="post">
+            <input type="hidden" name="ProductId" value="@Model.ProductID" />
+
+            <div class="form-group mb-3">
+                <label for="ReviewerName" class="form-label">Your Name</label>
+                <input type="text" class="form-control" id="ReviewerName" name="ReviewerName" required />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="ReviewContent" class="form-label">Review Content</label>
+                <textarea class="form-control" id="ReviewContent" name="ReviewContent" rows="4"
+                          placeholder="Share your thoughts about this product..."></textarea>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="StarRating" class="form-label">Rating</label>
+                <select class="form-control" id="StarRating" name="StarRating" required>
+                    <option value="" disabled selected>Select a rating</option>
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <option value="@i">@i Star@(i > 1 ? "s" : "")</option>
+                    }
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-custom">Submit Review</button>
+        </form>
+    </div>
+
+    <div class="mt-5">
+        <h2 class="mb-4">Product Reviews</h2>
+        @if (Model != null)
         {
-            <div class="card mb-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <h5 class="card-title">@review.ReviewerName</h5>
-                        <div>
-                            @for (int i = 0; i < review.StarRating; i++)
-                            {
-                                <span class="text-warning">★</span>
-                            }
-                            @for (int i = review.StarRating; i < 5; i++)
-                            {
-                                <span class="text-secondary">☆</span>
-                            }
+            @if (Model.Reviews != null && Model.Reviews.Any())
+            {
+                foreach (var review in Model.Reviews.OrderByDescending(r => r.ReviewDate))
+                {
+                    <div class="review-card p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-1">@review.ReviewerName</h5>
+                            <div class="star-rating">
+                                @for (int i = 0; i < review.StarRating; i++)
+                                {
+                                    <span>★</span>
+                                }
+                                @for (int i = review.StarRating; i < 5; i++)
+                                {
+                                    <span class="empty-star">☆</span>
+                                }
+                            </div>
                         </div>
+                        <div class="text-muted small mb-3">
+                            @review.ReviewDate.ToString("MMMM dd, yyyy")
+                        </div>
+                        <p class="mb-0">@review.ReviewContent</p>
                     </div>
-                    <h6 class="card-subtitle mb-2 text-muted">
-                        @review.ReviewDate.ToString("MMMM dd, yyyy")
-                    </h6>
-                    <p class="card-text">@review.ReviewContent</p>
+                }
+            }
+            else
+            {
+                <div class="review-card p-4 text-center">
+                    <p class="text-muted mb-0">No reviews yet. Be the first to review this product!</p>
                 </div>
+            }
+        }
+        else
+        {
+            <div class="alert alert-danger">
+                Error loading product details.
             </div>
         }
-    }
-    else
-    {
-        <p class="text-muted">No reviews yet. Be the first to review this product!</p>
-    }
+    </div>
 </div>

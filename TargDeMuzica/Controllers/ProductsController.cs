@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -7,21 +9,28 @@ using System.Composition;
 using System.Drawing.Printing;
 using TargDeMuzica.Data;
 using TargDeMuzica.Models;
+using static TargDeMuzica.Models.IncomingRequest;
 
 namespace TargDeMuzica.Controllers
 {
     public class ProductsController : Controller
     {
         private readonly ApplicationDbContext db;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IWebHostEnvironment _env;
 
-
-        public ProductsController(ApplicationDbContext context)
+        public ProductsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager,
+                                    RoleManager<IdentityRole> roleManager, IWebHostEnvironment env)
         {
             db = context;
+            _userManager = userManager;
+            _roleManager = roleManager;
+            _env = env;
         }
 
 
-
+        
         public IActionResult Index()
         {
             if (TempData.ContainsKey("message"))
@@ -45,22 +54,26 @@ namespace TargDeMuzica.Controllers
 
         public ActionResult Show(int id)
         {
-
             Product product = db.Products
                 .Include(p => p.Reviews)
                 .Include(p => p.MusicSuport)
                 .Include(p => p.Artist)
                 .FirstOrDefault(p => p.ProductID == id);
 
-            if (product != null && product.Reviews != null && product.Reviews.Any())
+            if (product == null)
             {
-                // Calculate average star rating
+                return NotFound();
+            }
+
+            if (product.Reviews != null && product.Reviews.Any())
+            {
                 product.ProductScore = (float)product.Reviews.Average(r => r.StarRating);
-                db.SaveChanges();  // Save the updated score to the database
+                db.SaveChanges();
             }
 
             return View(product);
         }
+
 
 
         [NonAction]
@@ -109,6 +122,7 @@ namespace TargDeMuzica.Controllers
 
             return selectList;
         }
+        [Authorize(Roles = "Administrator")]
         public ActionResult New()
         {
             Product produs = new Product();
@@ -117,37 +131,66 @@ namespace TargDeMuzica.Controllers
             return View(produs);
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpPost]
-        public ActionResult New(Product prod)
+        public async Task<IActionResult> New(Product prod, IFormFile Image)
         {
-
-            
-            // rev.ReviewDate = DateTime.Now;
-
             try
             {
+                if (Image != null && Image.Length > 0)
+                {
+                    var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mov" };
+                    var fileExtension = Path.GetExtension(Image.FileName).ToLower();
+
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        ModelState.AddModelError("ArticleImage", "Fișierul trebuie să fie o imagine(jpg, jpeg, png, gif) sau un video(mp4, mov).");
+                        prod.MusicSup = GetAllMusicSup();
+                        prod.ArtistList = GetAllArtists();
+                        return View(prod);
+                    }
+
+                    var imagesPath = Path.Combine(_env.WebRootPath, "images");
+                    var storagePath = Path.Combine(imagesPath, Image.FileName);
+                    var databaseFileName = "/images/" + Image.FileName;
+
+                    using (var fileStream = new FileStream(storagePath, FileMode.Create))
+                    {
+                        await Image.CopyToAsync(fileStream);
+                    }
+
+                    prod.ProductImageLocation = databaseFileName;
+                }
+                else
+                {
+
+                    ModelState.AddModelError("Image", "An image file is required");
+                    prod.MusicSup = GetAllMusicSup();
+                    prod.ArtistList = GetAllArtists();
+                    return View(prod);
+                }
+
                 prod.ProductGenres = prod.ProductGenresTemp.Split(' ').ToList();
                 db.Products.Add(prod);
                 db.SaveChanges();
-                TempData["message"] = "Review-ul a fost adaugat";
+                TempData["message"] = "Produsul a fost adaugat!";
                 return RedirectToAction("Index");
             }
-
             catch (Exception e)
             {
                 prod.MusicSup = GetAllMusicSup();
                 prod.ArtistList = GetAllArtists();
                 return View(prod);
             }
-
         }
-
+        [Authorize(Roles = "Colaborator,Administrator")]
         public ActionResult Edit(int id)
         {
             Product prod = db.Products.Find(id);
             return View(prod);
         }
 
+        [Authorize(Roles = "Colaborator,Administrator")]
         [HttpPost]
         public ActionResult Edit(int id, Product requestProd)
         {
@@ -182,13 +225,127 @@ namespace TargDeMuzica.Controllers
             }
         }
 
+        [Authorize(Roles = "Colaborator,Administrator")]
         public ActionResult Delete(int id)
         {
-            Product product = db.Products.Find(id);
-            db.Products.Remove(product);
-            db.SaveChanges();
-            TempData["message"] = "Produsul a fost sters";
-            return RedirectToAction("Index");
+            try
+            {
+                Product product = db.Products
+                    .Include(p => p.Reviews)  // Include related reviews
+                    .FirstOrDefault(p => p.ProductID == id);
+
+                if (product == null)
+                {
+                    return NotFound();
+                }
+
+                // First remove all reviews associated with the product
+                if (product.Reviews != null && product.Reviews.Any())
+                {
+                    db.Reviews.RemoveRange(product.Reviews);
+                }
+
+                // Then remove the product
+                db.Products.Remove(product);
+                db.SaveChanges();
+
+                TempData["message"] = "Produsul si review-urile asociate au fost sterse";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["message"] = "A aparut o eroare la stergerea produsului: " + ex.Message;
+                return RedirectToAction("Index");
+            }
+        }
+        // Modified ProductsController.cs - New method
+        [Authorize(Roles = "Colaborator,Administrator")]
+        public ActionResult Submit()
+        {
+            Product product = new Product();
+            product.MusicSup = GetAllMusicSup();
+            product.ArtistList = GetAllArtists();
+            return View(product);
+        }
+        [Authorize(Roles = "Colaborator,Administrator")]
+        [HttpPost]
+        public async Task<ActionResult> Submit(Product product, IFormFile Image)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    product.MusicSup = GetAllMusicSup();
+                    product.ArtistList = GetAllArtists();
+                    return View(product);
+                }
+
+                // Handle image upload
+                if (Image != null && Image.Length > 0)
+                {
+                    var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mov" };
+                    var fileExtension = Path.GetExtension(Image.FileName).ToLower();
+
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        ModelState.AddModelError("ArticleImage", "Fisierul trebuie să fie o imagine(jpg, jpeg, png, gif) sau un video(mp4, mov).");
+                        product.MusicSup = GetAllMusicSup();
+                        product.ArtistList = GetAllArtists();
+                        return View(product);
+                    }
+
+                    var uniqueFileName = $"{Guid.NewGuid()}_{DateTime.Now.ToString("yyyyMMddHHmmss")}{fileExtension}";
+
+                    var imagesPath = Path.Combine(_env.WebRootPath, "images");
+                    var storagePath = Path.Combine(imagesPath, uniqueFileName);
+                    var databaseFileName = "/images/" + uniqueFileName;
+
+                    using (var fileStream = new FileStream(storagePath, FileMode.Create))
+                    {
+                        await Image.CopyToAsync(fileStream);
+                    }
+
+                    product.ProductImageLocation = databaseFileName;
+                }
+                else
+                {
+                    ModelState.AddModelError("Image", "An image file is required");
+                    product.MusicSup = GetAllMusicSup();
+                    product.ArtistList = GetAllArtists();
+                    return View(product);
+                }
+
+                // Process genres
+                if (!string.IsNullOrEmpty(product.ProductGenresTemp))
+                {
+                    product.ProductGenres = product.ProductGenresTemp.Split(' ').ToList();
+                }
+
+                // Get current user
+                var user = await _userManager.GetUserAsync(User);
+
+                // Create the incoming request
+                var request = new IncomingRequest
+                {
+                    RequestDate = DateTime.Now,
+                    Status = RequestStatus.Pending,
+                    ProposedProduct = product,
+                    User = user
+                };
+
+                // Add to database
+                db.IncomingRequests.Add(request);
+                await db.SaveChangesAsync();
+
+                TempData["message"] = "Your product has been submitted for review. An administrator will review it shortly.";
+                return RedirectToAction("Index", "Products");
+            }
+            catch (Exception e)
+            {
+                product.MusicSup = GetAllMusicSup();
+                product.ArtistList = GetAllArtists();
+                return View(product);
+            }
         }
     }
 }

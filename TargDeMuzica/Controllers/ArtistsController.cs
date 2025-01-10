@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TargDeMuzica.Data;
 using TargDeMuzica.Models;
 
@@ -13,6 +14,8 @@ namespace TargDeMuzica.Controllers
         {
             db = context;
         }
+        [Authorize(Roles = "Administrator")]
+
         public IActionResult Index()
         {
             if (TempData.ContainsKey("message"))
@@ -26,17 +29,20 @@ namespace TargDeMuzica.Controllers
             ViewBag.Artists = artists;
             return View();
         }
+        [Authorize(Roles = "Administrator")]
+
         public ActionResult Show(int id)
         {
             Artist artist = db.Artists.Find(id);
             return View(artist);
         }
 
+        [Authorize(Roles = "Administrator")]
         public ActionResult New()
         {
             return View();
         }
-
+        [Authorize(Roles = "Administrator")]
         [HttpPost]
         public ActionResult New(Artist art)
         {
@@ -53,13 +59,14 @@ namespace TargDeMuzica.Controllers
                 return View(art);
             }
         }
+        [Authorize(Roles = "Administrator")]
 
         public ActionResult Edit(int id)
         {
             Artist artist = db.Artists.Find(id);
             return View(artist);
         }
-
+        [Authorize(Roles = "Administrator")]
         [HttpPost]
         public ActionResult Edit(int id, Artist requestArtist)
         {
@@ -78,7 +85,7 @@ namespace TargDeMuzica.Controllers
                 return View(requestArtist);
             }
         }
-
+        [Authorize(Roles = "Administrator")]
         public ActionResult Delete(int id)
         {
             Artist artist = db.Artists.Find(id);

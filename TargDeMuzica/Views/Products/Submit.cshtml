@@ -3,7 +3,7 @@
 <h2> Adaugare Produs</h2>
 
 
-<form method="post" asp-action="New" asp-controller="Products">
+<form method="post" enctype="multipart/form-data" asp-action="Submit" asp-controller="Products">
 
     <div class="form-group">
         <label asp-for="ProductName" class="control-label">Nume Produs:</label>
@@ -66,7 +66,7 @@
         <br />
     </div>
 
-    
+
     <button class="btn btn-success" type="submit">Adauga produs</button>
 
 </form>
