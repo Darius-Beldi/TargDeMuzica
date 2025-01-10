@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TargDeMuzica.Data;
 
@@ -11,9 +12,11 @@ using TargDeMuzica.Data;
 namespace TargDeMuzica.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250108141311_removerev")]
+    partial class removerev
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -303,24 +306,18 @@ namespace TargDeMuzica.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RequestID"));
 
-                    b.Property<string>("AdminComment")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ProposedProductProductID")
+                    b.Property<int>("ProductID")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("RequestDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<bool>("RequestApproved")
+                        .HasColumnType("bit");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("RequestID");
 
-                    b.HasIndex("ProposedProductProductID");
+                    b.HasIndex("ProductID");
 
                     b.HasIndex("UserId");
 
@@ -353,6 +350,9 @@ namespace TargDeMuzica.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductID"));
 
                     b.Property<int?>("ArtistID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("IncomingRequestRequestID")
                         .HasColumnType("int");
 
                     b.Property<int?>("MusicSuportID")
@@ -391,6 +391,8 @@ namespace TargDeMuzica.Data.Migrations
                     b.HasKey("ProductID");
 
                     b.HasIndex("ArtistID");
+
+                    b.HasIndex("IncomingRequestRequestID");
 
                     b.HasIndex("UserId");
 
@@ -526,9 +528,9 @@ namespace TargDeMuzica.Data.Migrations
 
             modelBuilder.Entity("TargDeMuzica.Models.IncomingRequest", b =>
                 {
-                    b.HasOne("TargDeMuzica.Models.Product", "ProposedProduct")
+                    b.HasOne("TargDeMuzica.Models.Product", "Product")
                         .WithMany()
-                        .HasForeignKey("ProposedProductProductID")
+                        .HasForeignKey("ProductID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -536,7 +538,7 @@ namespace TargDeMuzica.Data.Migrations
                         .WithMany()
                         .HasForeignKey("UserId");
 
-                    b.Navigation("ProposedProduct");
+                    b.Navigation("Product");
 
                     b.Navigation("User");
                 });
@@ -546,6 +548,10 @@ namespace TargDeMuzica.Data.Migrations
                     b.HasOne("TargDeMuzica.Models.Artist", "Artist")
                         .WithMany("Products")
                         .HasForeignKey("ArtistID");
+
+                    b.HasOne("TargDeMuzica.Models.IncomingRequest", null)
+                        .WithMany("ProductsToBeReviewed")
+                        .HasForeignKey("IncomingRequestRequestID");
 
                     b.HasOne("TargDeMuzica.Models.ApplicationUser", "User")
                         .WithMany()
@@ -574,6 +580,11 @@ namespace TargDeMuzica.Data.Migrations
             modelBuilder.Entity("TargDeMuzica.Models.Artist", b =>
                 {
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("TargDeMuzica.Models.IncomingRequest", b =>
+                {
+                    b.Navigation("ProductsToBeReviewed");
                 });
 
             modelBuilder.Entity("TargDeMuzica.Models.Product", b =>

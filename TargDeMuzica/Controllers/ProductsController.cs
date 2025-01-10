@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -7,21 +9,26 @@ using System.Composition;
 using System.Drawing.Printing;
 using TargDeMuzica.Data;
 using TargDeMuzica.Models;
+using static TargDeMuzica.Models.IncomingRequest;
 
 namespace TargDeMuzica.Controllers
 {
     public class ProductsController : Controller
     {
         private readonly ApplicationDbContext db;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-
-        public ProductsController(ApplicationDbContext context)
+        public ProductsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager,
+                                    RoleManager<IdentityRole> roleManager)
         {
             db = context;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
 
-
+        
         public IActionResult Index()
         {
             if (TempData.ContainsKey("message"))
@@ -109,6 +116,7 @@ namespace TargDeMuzica.Controllers
 
             return selectList;
         }
+        [Authorize(Roles = "Administrator")]
         public ActionResult New()
         {
             Product produs = new Product();
@@ -117,6 +125,7 @@ namespace TargDeMuzica.Controllers
             return View(produs);
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpPost]
         public ActionResult New(Product prod)
         {
@@ -141,13 +150,14 @@ namespace TargDeMuzica.Controllers
             }
 
         }
-
+        [Authorize(Roles = "Colaborator,Administrator")]
         public ActionResult Edit(int id)
         {
             Product prod = db.Products.Find(id);
             return View(prod);
         }
 
+        [Authorize(Roles = "Colaborator,Administrator")]
         [HttpPost]
         public ActionResult Edit(int id, Product requestProd)
         {
@@ -182,6 +192,7 @@ namespace TargDeMuzica.Controllers
             }
         }
 
+        [Authorize(Roles = "Colaborator,Administrator")]
         public ActionResult Delete(int id)
         {
             Product product = db.Products.Find(id);
@@ -189,6 +200,51 @@ namespace TargDeMuzica.Controllers
             db.SaveChanges();
             TempData["message"] = "Produsul a fost sters";
             return RedirectToAction("Index");
+        }
+        // Modified ProductsController.cs - New method
+        [Authorize(Roles = "Colaborator,Administrator")]
+        public ActionResult Submit()
+        {
+            Product product = new Product();
+            product.MusicSup = GetAllMusicSup();
+            product.ArtistList = GetAllArtists();
+            return View(product);
+        }
+
+        [Authorize(Roles = "Colaborator,Administrator")]
+        [HttpPost]
+        public async Task<ActionResult> Submit(Product product)
+        {
+            if (!ModelState.IsValid)
+            {
+                product.MusicSup = GetAllMusicSup();
+                product.ArtistList = GetAllArtists();
+                return View(product);
+            }
+            // Instead of redirecting with the product, we'll handle the submission right here
+            var user = await _userManager.GetUserAsync(User);
+
+            // Process the genres if provided
+            if (!string.IsNullOrEmpty(product.ProductGenresTemp))
+            {
+                product.ProductGenres = product.ProductGenresTemp.Split(' ').ToList();
+            }
+
+            // Create the incoming request
+            var request = new IncomingRequest
+            {
+                RequestDate = DateTime.Now,
+                Status = RequestStatus.Pending,
+                ProposedProduct = product,
+                User = user
+            };
+
+            // Add to database
+            db.IncomingRequests.Add(request);
+            await db.SaveChangesAsync();
+
+            TempData["message"] = "Your product has been submitted for review. An administrator will review it shortly.";
+            return RedirectToAction("Index", "Products");
         }
     }
 }
