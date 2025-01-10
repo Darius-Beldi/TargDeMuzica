@@ -187,6 +187,12 @@
                                 <a class="nav-link" href="/Products/Submit">Propune produs nou</a>
                             </li>
                         }
+                        @if (User.IsInRole("Administrator") || User.IsInRole("Colaborator"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Clients" asp-action="Index">Utilizatori inregistrati</a>
+                            </li>
+                        }
 
                     </ul>
                     <ul class="navbar-nav">

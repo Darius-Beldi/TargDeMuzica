@@ -12,8 +12,8 @@ using TargDeMuzica.Data;
 namespace TargDeMuzica.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250110171220_1")]
-    partial class _1
+    [Migration("20250110215854_clienti12")]
+    partial class clienti12
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -296,6 +296,32 @@ namespace TargDeMuzica.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Carts");
+                });
+
+            modelBuilder.Entity("TargDeMuzica.Models.Clients", b =>
+                {
+                    b.Property<string>("ClientId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AllAvailableRoles")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CurrentRole")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ClientId");
+
+                    b.ToTable("Clients");
                 });
 
             modelBuilder.Entity("TargDeMuzica.Models.IncomingRequest", b =>

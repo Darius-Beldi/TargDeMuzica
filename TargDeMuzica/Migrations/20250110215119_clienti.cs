@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TargDeMuzica.Migrations
 {
     /// <inheritdoc />
-    public partial class _1 : Migration
+    public partial class clienti : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

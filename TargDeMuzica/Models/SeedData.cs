@@ -35,7 +35,7 @@ namespace TargDeMuzica.Models
                     {
                         Id = "2c5e174e-3b0e-446f-86af-483d56fd7211",
                         Name = "Colaborator",
-                        NormalizedName = "Colaborat".ToUpper()
+                        NormalizedName = "Colaborator".ToUpper()
                     },
 
                     new IdentityRole
