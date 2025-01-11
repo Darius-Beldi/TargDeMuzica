@@ -70,13 +70,14 @@ namespace TargDeMuzica.Controllers
                 return RedirectToAction("Show", "Products", new { id = rev.ProductId });
             }
         }
-
+        [Authorize(Roles = "Administrator")]
         public ActionResult Edit(int id)
         {
             Review review = db.Reviews.Find(id);
             return View(review);
         }
 
+        [Authorize(Roles ="Administrator")]
         [HttpPost]
         public ActionResult Edit(int id, Review requestReview)
         {
@@ -91,21 +92,21 @@ namespace TargDeMuzica.Controllers
 
                 db.SaveChanges();
                 TempData["message"] = "Comentariul a fost adugat cu succes!!";
-                return RedirectToAction("Index");
+                return RedirectToAction("Show", "Products", new { id = review.ProductId });
             }
             catch (Exception e)
             {
                 return View(requestReview);
             }
         }
-
+        [Authorize(Roles = "Administrator")]
         public ActionResult Delete(int id)
         {
            Review review = db.Reviews.Find(id);
             db.Reviews.Remove(review);
             db.SaveChanges();
             TempData["message"] = "Review-ul a fost sters";
-            return RedirectToAction("Index");
+            return RedirectToAction("Show", "Products", new { id = review.ProductId });
         }
     }
 }

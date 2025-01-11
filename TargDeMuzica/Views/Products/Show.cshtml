@@ -154,12 +154,24 @@
                 <dd class="col-sm-8">@(Model.ProductGenres != null ? string.Join(", ", Model.ProductGenres) : "None")</dd>
 
                 <dt class="col-sm-4">Music Support:</dt>
-                <dd class="col-sm-8">@(Model.MusicSuport != null ? string.Join(", ", Model.MusicSuport.Select(ms => ms.MusicSuportName)) : "None")</dd>
+                <dd class="col-sm-8">
+                    @(Model.MusicSuport?.MusicSuportName ?? "Unknown")
+                </dd>
 
                 <dt class="col-sm-4">Artist:</dt>
                 <dd class="col-sm-8">@(Model.Artist != null ? Model.Artist.ArtistName : "Unknown")</dd>
             </dl>
 
+            <div class="mt-4">
+                <a asp-controller="Carts" asp-action="Index" class="btn btn-custom" style="background-color: #28a745; color: white;">Add to Cart</a>
+            </div>
+
+            <div class="fixed-bottom-right">
+                <a asp-action="Index" class="btn btn-custom btn-secondary btn-float">Back to List</a>
+            </div>
+        </div>
+    </div>
+</div>
             <div class="fixed-bottom-right">
                 <a asp-action="Index" class="btn btn-custom btn-secondary btn-float">Back to List</a>
             </div>
@@ -223,23 +235,48 @@
                 foreach (var review in Model.Reviews.OrderByDescending(r => r.ReviewDate))
                 {
                     <div class="review-card p-4">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="mb-1">@review.ReviewerName</h5>
-                            <div class="star-rating">
-                                @for (int i = 0; i < review.StarRating; i++)
-                                {
-                                    <span>★</span>
-                                }
-                                @for (int i = review.StarRating; i < 5; i++)
-                                {
-                                    <span class="empty-star">☆</span>
-                                }
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-1">@review.ReviewerName</h5>
+                                    <div class="star-rating">
+                                        @for (int i = 0; i < review.StarRating; i++)
+                                        {
+                                            <span>★</span>
+                                        }
+                                        @for (int i = review.StarRating; i < 5; i++)
+                                        {
+                                            <span class="empty-star">☆</span>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="text-muted small mb-3">
+                                    @review.ReviewDate.ToString("MMMM dd, yyyy")
+                                </div>
+                                <p class="mb-0">@review.ReviewContent</p>
                             </div>
+
+                            @if (User.IsInRole("Administrator"))
+                            {
+                                <div class="ms-3">
+                                    <div class="d-flex gap-2">
+                                        <a class="btn btn-custom btn-sm"
+                                           asp-controller="Reviews"
+                                           asp-action="Edit"
+                                           asp-route-id="@review.ReviewID">
+                                            Edit
+                                        </a>
+                                        <a class="btn btn-custom btn-secondary btn-sm"
+                                           asp-controller="Reviews"
+                                           asp-action="Delete"
+                                           asp-route-id="@review.ReviewID"
+                                           onclick="return confirm('Are you sure you want to delete this review?');">
+                                            Delete
+                                        </a>
+                                    </div>
+                                </div>
+                            }
                         </div>
-                        <div class="text-muted small mb-3">
-                            @review.ReviewDate.ToString("MMMM dd, yyyy")
-                        </div>
-                        <p class="mb-0">@review.ReviewContent</p>
                     </div>
                 }
             }
@@ -249,12 +286,6 @@
                     <p class="text-muted mb-0">No reviews yet. Be the first to review this product!</p>
                 </div>
             }
-        }
-        else
-        {
-            <div class="alert alert-danger">
-                Error loading product details.
-            </div>
         }
     </div>
 </div>

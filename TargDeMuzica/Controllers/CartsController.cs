@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TargDeMuzica.Data;
 using TargDeMuzica.Models;
 
@@ -12,6 +13,7 @@ namespace TargDeMuzica.Controllers
         {
             db = context;
         }
+        [Authorize(Roles = "UserI, UserN, Administrator, Colaborator")]
         public IActionResult Index()
         {
             if (TempData.ContainsKey("message"))

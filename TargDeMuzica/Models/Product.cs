@@ -19,11 +19,11 @@ namespace TargDeMuzica.Models
 
         public string? ProductGenresTemp { get; set; }
         public List<string>? ProductGenres { get; set; }
-        
-        
+
+
         //foreign key MusicSuport == categorie
-        public int? MusicSuportID{ get; set; }
-        public virtual ICollection<MusicSuport>? MusicSuport { get; set; }
+        public int? MusicSuportID { get; set; }
+        public virtual MusicSuport? MusicSuport { get; set; }
         [NotMapped]
         public IEnumerable<SelectListItem>? MusicSup { get; set; }
         //foreign key Artist
