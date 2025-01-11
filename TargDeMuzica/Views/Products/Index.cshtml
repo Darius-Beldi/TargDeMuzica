@@ -66,7 +66,7 @@
 
 
         
-
+    
 
 @if (TempData.ContainsKey("message"))
 {
@@ -109,7 +109,6 @@
                                     
                                       @* CTRL F *@
                                     <a class="btn btn-outline-primary btn-sm" asp-action="Show" asp-controller="Products" asp-route-id="@product.ProductID">View Details</a>
-                                   
                                     @if (User.IsInRole("Administrator") || (User.IsInRole("Colaborator") && product.User?.Id == User.FindFirstValue(ClaimTypes.NameIdentifier)))
 
                                     {

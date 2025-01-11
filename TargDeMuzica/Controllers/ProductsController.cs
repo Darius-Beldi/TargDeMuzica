@@ -46,7 +46,8 @@ namespace TargDeMuzica.Controllers
 
             // Start with base query
             var productsQuery = db.Products
-                .Where(p => !pendingProductIds.Contains(p.ProductID));
+    .Include(p => p.User)  // Add this line to load the User relationship
+    .Where(p => !pendingProductIds.Contains(p.ProductID));
 
             // Apply search filter if provided
             if (!string.IsNullOrWhiteSpace(search))
@@ -170,7 +171,6 @@ namespace TargDeMuzica.Controllers
             produs.ArtistList = GetAllArtists();
             return View(produs);
         }
-
         [Authorize(Roles = "Administrator")]
         [HttpPost]
         public async Task<IActionResult> New(Product prod, IFormFile Image)
@@ -203,12 +203,15 @@ namespace TargDeMuzica.Controllers
                 }
                 else
                 {
-
                     ModelState.AddModelError("Image", "An image file is required");
                     prod.MusicSup = GetAllMusicSup();
                     prod.ArtistList = GetAllArtists();
                     return View(prod);
                 }
+
+                // Get the current user and assign it to the product
+                var currentUser = await _userManager.GetUserAsync(User);
+                prod.User = currentUser;
 
                 prod.ProductGenres = prod.ProductGenresTemp.Split(' ').ToList();
                 db.Products.Add(prod);
@@ -314,6 +317,8 @@ namespace TargDeMuzica.Controllers
         }
         [Authorize(Roles = "Colaborator,Administrator")]
         [HttpPost]
+        [Authorize(Roles = "Colaborator,Administrator")]
+        [HttpPost]
         public async Task<ActionResult> Submit(Product product, IFormFile Image)
         {
             try
@@ -340,7 +345,6 @@ namespace TargDeMuzica.Controllers
                     }
 
                     var uniqueFileName = $"{Guid.NewGuid()}_{DateTime.Now.ToString("yyyyMMddHHmmss")}{fileExtension}";
-
                     var imagesPath = Path.Combine(_env.WebRootPath, "images");
                     var storagePath = Path.Combine(imagesPath, uniqueFileName);
                     var databaseFileName = "/images/" + uniqueFileName;
@@ -366,27 +370,43 @@ namespace TargDeMuzica.Controllers
                     product.ProductGenres = product.ProductGenresTemp.Split(' ').ToList();
                 }
 
-                // Get current user
-                var user = await _userManager.GetUserAsync(User);
-
-                // Create the incoming request
-                var request = new IncomingRequest
+                // Get current user and properly set the user association
+                var currentUser = await _userManager.GetUserAsync(User);
+                if (currentUser != null)
                 {
-                    RequestDate = DateTime.Now,
-                    Status = RequestStatus.Pending,
-                    ProposedProduct = product,
-                    User = user
-                };
+                    // Set both the User and UserId properties
+                    var userFromDb = await db.Users.FindAsync(currentUser.Id);
+                    product.User = userFromDb;
+                    product.UserId = currentUser.Id;
 
-                // Add to database
-                db.IncomingRequests.Add(request);
-                await db.SaveChangesAsync();
+                    // Create the incoming request with proper user association
+                    var request = new IncomingRequest
+                    {
+                        RequestDate = DateTime.Now,
+                        Status = RequestStatus.Pending,
+                        ProposedProduct = product,
+                        User = userFromDb
+                    };
 
-                TempData["message"] = "Your product has been submitted for review. An administrator will review it shortly.";
-                return RedirectToAction("Index", "Products");
+                    // Add to database and save
+                    db.IncomingRequests.Add(request);
+                    await db.SaveChangesAsync();
+
+                    TempData["message"] = "Your product has been submitted for review. An administrator will review it shortly.";
+                    return RedirectToAction("Index", "Products");
+                }
+                else
+                {
+                    TempData["message"] = "Error: Unable to associate user with product.";
+                    return RedirectToAction("Index", "Products");
+                }
             }
             catch (Exception e)
             {
+                // Add logging for debugging
+                System.Diagnostics.Debug.WriteLine($"Error in Submit: {e.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack Trace: {e.StackTrace}");
+
                 product.MusicSup = GetAllMusicSup();
                 product.ArtistList = GetAllArtists();
                 return View(product);

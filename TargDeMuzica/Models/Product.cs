@@ -35,7 +35,7 @@ namespace TargDeMuzica.Models
         public virtual ICollection<Cart>? Carts { get; set; }
         //vector review
         public ICollection<Review>? Reviews { get; set; }
-
+        public string? UserId { get; set; }
         public virtual ApplicationUser? User { get; set; }
     }
 }
