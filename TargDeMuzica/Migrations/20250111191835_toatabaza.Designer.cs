@@ -12,8 +12,8 @@ using TargDeMuzica.Data;
 namespace TargDeMuzica.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250111154135_initial")]
-    partial class initial
+    [Migration("20250111191835_toatabaza")]
+    partial class toatabaza
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -175,21 +175,6 @@ namespace TargDeMuzica.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("MusicSuportProduct", b =>
-                {
-                    b.Property<int>("MusicSuportID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductsProductID")
-                        .HasColumnType("int");
-
-                    b.HasKey("MusicSuportID", "ProductsProductID");
-
-                    b.HasIndex("ProductsProductID");
-
-                    b.ToTable("MusicSuportProduct");
                 });
 
             modelBuilder.Entity("TargDeMuzica.Models.ApplicationUser", b =>
@@ -420,6 +405,8 @@ namespace TargDeMuzica.Migrations
 
                     b.HasIndex("ArtistID");
 
+                    b.HasIndex("MusicSuportID");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Products");
@@ -527,21 +514,6 @@ namespace TargDeMuzica.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MusicSuportProduct", b =>
-                {
-                    b.HasOne("TargDeMuzica.Models.MusicSuport", null)
-                        .WithMany()
-                        .HasForeignKey("MusicSuportID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TargDeMuzica.Models.Product", null)
-                        .WithMany()
-                        .HasForeignKey("ProductsProductID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("TargDeMuzica.Models.Cart", b =>
                 {
                     b.HasOne("TargDeMuzica.Models.ApplicationUser", "User")
@@ -574,11 +546,17 @@ namespace TargDeMuzica.Migrations
                         .WithMany("Products")
                         .HasForeignKey("ArtistID");
 
+                    b.HasOne("TargDeMuzica.Models.MusicSuport", "MusicSuport")
+                        .WithMany("Products")
+                        .HasForeignKey("MusicSuportID");
+
                     b.HasOne("TargDeMuzica.Models.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
 
                     b.Navigation("Artist");
+
+                    b.Navigation("MusicSuport");
 
                     b.Navigation("User");
                 });
@@ -599,6 +577,11 @@ namespace TargDeMuzica.Migrations
                 });
 
             modelBuilder.Entity("TargDeMuzica.Models.Artist", b =>
+                {
+                    b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("TargDeMuzica.Models.MusicSuport", b =>
                 {
                     b.Navigation("Products");
                 });

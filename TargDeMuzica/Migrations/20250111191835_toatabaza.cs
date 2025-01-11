@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TargDeMuzica.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class toatabaza : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -248,6 +248,11 @@ namespace TargDeMuzica.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Products_MusicSuports_MusicSuportID",
+                        column: x => x.MusicSuportID,
+                        principalTable: "MusicSuports",
+                        principalColumn: "MusicSuportID");
                 });
 
             migrationBuilder.CreateTable(
@@ -297,30 +302,6 @@ namespace TargDeMuzica.Migrations
                     table.ForeignKey(
                         name: "FK_IncomingRequests_Products_ProposedProductProductID",
                         column: x => x.ProposedProductProductID,
-                        principalTable: "Products",
-                        principalColumn: "ProductID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "MusicSuportProduct",
-                columns: table => new
-                {
-                    MusicSuportID = table.Column<int>(type: "int", nullable: false),
-                    ProductsProductID = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MusicSuportProduct", x => new { x.MusicSuportID, x.ProductsProductID });
-                    table.ForeignKey(
-                        name: "FK_MusicSuportProduct_MusicSuports_MusicSuportID",
-                        column: x => x.MusicSuportID,
-                        principalTable: "MusicSuports",
-                        principalColumn: "MusicSuportID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_MusicSuportProduct_Products_ProductsProductID",
-                        column: x => x.ProductsProductID,
                         principalTable: "Products",
                         principalColumn: "ProductID",
                         onDelete: ReferentialAction.Cascade);
@@ -414,14 +395,14 @@ namespace TargDeMuzica.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MusicSuportProduct_ProductsProductID",
-                table: "MusicSuportProduct",
-                column: "ProductsProductID");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Products_ArtistID",
                 table: "Products",
                 column: "ArtistID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Products_MusicSuportID",
+                table: "Products",
+                column: "MusicSuportID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_UserId",
@@ -467,9 +448,6 @@ namespace TargDeMuzica.Migrations
                 name: "IncomingRequests");
 
             migrationBuilder.DropTable(
-                name: "MusicSuportProduct");
-
-            migrationBuilder.DropTable(
                 name: "Reviews");
 
             migrationBuilder.DropTable(
@@ -479,9 +457,6 @@ namespace TargDeMuzica.Migrations
                 name: "Carts");
 
             migrationBuilder.DropTable(
-                name: "MusicSuports");
-
-            migrationBuilder.DropTable(
                 name: "Products");
 
             migrationBuilder.DropTable(
@@ -489,6 +464,9 @@ namespace TargDeMuzica.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "MusicSuports");
         }
     }
 }
