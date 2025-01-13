@@ -19,7 +19,7 @@ namespace TargDeMuzica.Controllers
             _userManager = userManager;
         }
 
-        // Only admins can see all pending requests
+        
         [Authorize(Roles = "Administrator")]
         public IActionResult Index()
         {
@@ -33,7 +33,7 @@ namespace TargDeMuzica.Controllers
             return View(pendingRequests);
         }
 
-        // Collaborators submit new product requests here
+       
         [Authorize(Roles = "Colaborator")]
         [HttpPost]
         public async Task<IActionResult> Submit(Product product)
@@ -58,7 +58,7 @@ namespace TargDeMuzica.Controllers
             return RedirectToAction("Index", "Products");
         }
 
-        // Admins approve or reject requests
+       
         [Authorize(Roles = "Administrator")]
         [HttpPost]
         public async Task<IActionResult> Review(int requestId, bool approved, string? comment)
@@ -73,27 +73,6 @@ namespace TargDeMuzica.Controllers
             request.Status = approved ? RequestStatus.Approved : RequestStatus.Rejected;
             request.AdminComment = comment;
 
-            /*if (approved)
-            {
-                // Create a new product instance and copy the properties
-                var newProduct = new Product
-                {
-                    ProductName = request.ProposedProduct.ProductName,
-                    ProductDescription = request.ProposedProduct.ProductDescription,
-                    ProductPrice = request.ProposedProduct.ProductPrice,
-                    ProductStock = request.ProposedProduct.ProductStock,
-                    ProductImageLocation = request.ProposedProduct.ProductImageLocation,
-                    ProductScore = request.ProposedProduct.ProductScore,
-                    ProductGenres = request.ProposedProduct.ProductGenres,
-                    ProductGenresTemp = request.ProposedProduct.ProductGenresTemp,
-                    MusicSuportID = request.ProposedProduct.MusicSuportID,
-                    ArtistID = request.ProposedProduct.ArtistID,
-                    User = request.User
-                };
-
-                // Add the new product to the database
-                _db.Products.Add(newProduct);
-            }*/
 
             await _db.SaveChangesAsync();
 

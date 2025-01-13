@@ -116,7 +116,7 @@
             transform: scale(1.2);
         }
 
-    /* Tooltip styling */
+  
     .tooltip-content {
         text-align: left;
         font-size: 0.875rem;
@@ -252,7 +252,6 @@
         }
     }
 
-    /* Override Bootstrap tooltip styles */
     .tooltip-inner {
         max-width: 300px;
         text-align: left;
@@ -266,7 +265,7 @@
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Initialize tooltips with custom options
+            
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl, {
@@ -276,7 +275,6 @@
                 });
             });
 
-            // Form submission handling with animation
             const forms = document.querySelectorAll('.update-role-form');
             forms.forEach(form => {
                 form.addEventListener('submit', function (e) {

@@ -30,9 +30,6 @@ namespace TargDeMuzica.Controllers
             _env = env;
         }
 
-
-
-
         public IActionResult Index(string search, string sortBy = "name", string sortOrder = "asc")
         {
             if (TempData.ContainsKey("message"))
@@ -44,19 +41,19 @@ namespace TargDeMuzica.Controllers
                 .Where(r => r.Status == IncomingRequest.RequestStatus.Rejected || r.Status == IncomingRequest.RequestStatus.Pending)
                 .Select(r => r.ProposedProduct.ProductID);
 
-            // Start with base query
+            
             var productsQuery = db.Products
-    .Include(p => p.User)  // Add this line to load the User relationship
-    .Where(p => !pendingProductIds.Contains(p.ProductID));
+                                    .Include(p => p.User)  
+                                    .Where(p => !pendingProductIds.Contains(p.ProductID));
 
-            // Apply search filter if provided
+            
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.Trim();
                 productsQuery = productsQuery.Where(p => p.ProductName.Contains(search));
             }
 
-            // Apply sorting
+            
             productsQuery = sortBy.ToLower() switch
             {
                 "price" => sortOrder.ToLower() == "asc"
@@ -65,14 +62,14 @@ namespace TargDeMuzica.Controllers
                 "rating" => sortOrder.ToLower() == "asc"
                     ? productsQuery.OrderBy(p => p.ProductScore)
                     : productsQuery.OrderByDescending(p => p.ProductScore),
-                _ => sortOrder.ToLower() == "asc"  // Default sort by name
+                _ => sortOrder.ToLower() == "asc"  
                     ? productsQuery.OrderBy(p => p.ProductName)
                     : productsQuery.OrderByDescending(p => p.ProductName)
             };
 
             var products = productsQuery.ToList();
 
-            // Set ViewBag properties for the view
+            
             ViewBag.Products = products;
             ViewBag.SearchString = search;
             ViewBag.CurrentSort = sortBy;
@@ -120,15 +117,11 @@ namespace TargDeMuzica.Controllers
         [NonAction]
         public IEnumerable<SelectListItem> GetAllMusicSup()
         {
-            // generam o lista de tipul SelectListItem fara elemente
-
+           
             var selectList = new List<SelectListItem>();
-
-            // extragem toate categoriile din baza de date
             var sup = from su in db.MusicSuports
                              select su;
 
-            // iteram prin categorii
             foreach (var su in sup)
             {
                 selectList.Add(new SelectListItem
@@ -143,15 +136,10 @@ namespace TargDeMuzica.Controllers
         [NonAction]
         public IEnumerable<SelectListItem> GetAllArtists()
         {
-            // generam o lista de tipul SelectListItem fara elemente
-
             var selectList = new List<SelectListItem>();
-
-            // extragem toate categoriile din baza de date
             var artist = from art in db.Artists
                       select art;
 
-            // iteram prin categorii
             foreach (var art in artist)
             {
                 selectList.Add(new SelectListItem
@@ -209,7 +197,6 @@ namespace TargDeMuzica.Controllers
                     return View(prod);
                 }
 
-                // Get the current user and assign it to the product
                 var currentUser = await _userManager.GetUserAsync(User);
                 prod.User = currentUser;
 
@@ -278,7 +265,7 @@ namespace TargDeMuzica.Controllers
             try
             {
                 Product product = db.Products
-                    .Include(p => p.Reviews)  // Include related reviews
+                    .Include(p => p.Reviews)  
                     .FirstOrDefault(p => p.ProductID == id);
 
                 if (product == null)
@@ -286,13 +273,11 @@ namespace TargDeMuzica.Controllers
                     return NotFound();
                 }
 
-                // First remove all reviews associated with the product
                 if (product.Reviews != null && product.Reviews.Any())
                 {
                     db.Reviews.RemoveRange(product.Reviews);
                 }
 
-                // Then remove the product
                 db.Products.Remove(product);
                 db.SaveChanges();
 
@@ -306,7 +291,6 @@ namespace TargDeMuzica.Controllers
             }
         }
         
-        // Modified ProductsController.cs - New method
         [Authorize(Roles = "Colaborator,Administrator")]
         public ActionResult Submit()
         {
@@ -330,7 +314,6 @@ namespace TargDeMuzica.Controllers
                     return View(product);
                 }
 
-                // Handle image upload
                 if (Image != null && Image.Length > 0)
                 {
                     var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mov" };
@@ -364,22 +347,18 @@ namespace TargDeMuzica.Controllers
                     return View(product);
                 }
 
-                // Process genres
                 if (!string.IsNullOrEmpty(product.ProductGenresTemp))
                 {
                     product.ProductGenres = product.ProductGenresTemp.Split(' ').ToList();
                 }
 
-                // Get current user and properly set the user association
                 var currentUser = await _userManager.GetUserAsync(User);
                 if (currentUser != null)
                 {
-                    // Set both the User and UserId properties
                     var userFromDb = await db.Users.FindAsync(currentUser.Id);
                     product.User = userFromDb;
                     product.UserId = currentUser.Id;
 
-                    // Create the incoming request with proper user association
                     var request = new IncomingRequest
                     {
                         RequestDate = DateTime.Now,
@@ -388,7 +367,6 @@ namespace TargDeMuzica.Controllers
                         User = userFromDb
                     };
 
-                    // Add to database and save
                     db.IncomingRequests.Add(request);
                     await db.SaveChangesAsync();
 
@@ -403,7 +381,6 @@ namespace TargDeMuzica.Controllers
             }
             catch (Exception e)
             {
-                // Add logging for debugging
                 System.Diagnostics.Debug.WriteLine($"Error in Submit: {e.Message}");
                 System.Diagnostics.Debug.WriteLine($"Stack Trace: {e.StackTrace}");
 

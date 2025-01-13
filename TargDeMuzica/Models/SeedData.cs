@@ -18,7 +18,7 @@ namespace TargDeMuzica.Models
                 // Acesta metoda trebuie sa se execute o singura data
                  if (context.Roles.Any())
                  {
-                     return; // database already contains seed data
+                     return; 
                  }
 
                  // CREAREA ROLURILOR IN BD
@@ -115,7 +115,7 @@ namespace TargDeMuzica.Models
                      }
                  );
                  context.SaveChanges();
-                 // Save the initial user and role data
+                 
                  
 
                 // Add Music Supports (Categories)
@@ -141,10 +141,9 @@ namespace TargDeMuzica.Models
 
                 context.SaveChanges();
 
-                // Get reference to the user we'll use for reviews
+                
                 var user = context.Users.Find("8e445865-a24d-4543-a6c6-9443d048cdb2");
 
-                // Get references to the created entities
                 var vinyl = context.MusicSuports.First(m => m.MusicSuportName == "Vinyl");
                 var cd = context.MusicSuports.First(m => m.MusicSuportName == "CD");
                 var pinkFloyd = context.Artists.First(a => a.ArtistName == "Pink Floyd");
@@ -257,12 +256,10 @@ namespace TargDeMuzica.Models
 
                 context.SaveChanges();
 
-                // Get references to some products for reviews
                 var darkSide = context.Products.First(p => p.ProductName == "The Dark Side of the Moon");
                 var wall = context.Products.First(p => p.ProductName == "The Wall");
                 var abbeyRoad = context.Products.First(p => p.ProductName == "Abbey Road");
 
-                // Only add reviews if we have a valid user
                 if (user != null)
                 {
                     // Add Reviews

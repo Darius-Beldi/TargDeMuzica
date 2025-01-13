@@ -26,14 +26,14 @@ namespace TargDeMuzica.Controllers
 
         public async Task<IActionResult> Index()
         {
-            // Get all users
+            
             var users = await _userManager.Users.ToListAsync();
             var clientsList = new List<Clients>();
             var allRoles = await _roleManager.Roles.Select(r => r.Name).ToListAsync();
 
             foreach (var user in users)
             {
-                // Get current role for the user (taking the first one if multiple exist)
+                
                 var userRoles = await _userManager.GetRolesAsync(user);
                 var currentRole = userRoles.FirstOrDefault() ?? "No Role";
 
@@ -63,16 +63,15 @@ namespace TargDeMuzica.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-                // Get all current roles
+               
                 var currentRoles = await _userManager.GetRolesAsync(user);
 
-                // Remove all current roles
+                
                 if (currentRoles.Any())
                 {
                     await _userManager.RemoveFromRolesAsync(user, currentRoles);
                 }
 
-                // Add the new role
                 var result = await _userManager.AddToRoleAsync(user, newRole);
 
                 if (result.Succeeded)
