@@ -41,7 +41,7 @@ namespace TargDeMuzica.Controllers
             }
 
             var pendingProductIds = db.IncomingRequests
-                .Where(r => r.Status == IncomingRequest.RequestStatus.Pending)
+                .Where(r => r.Status == IncomingRequest.RequestStatus.Rejected || r.Status == IncomingRequest.RequestStatus.Pending)
                 .Select(r => r.ProposedProduct.ProductID);
 
             // Start with base query

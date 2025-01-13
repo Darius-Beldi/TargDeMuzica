@@ -58,13 +58,14 @@
                         <td>
                             <form asp-action="Review" method="post" class="update-role-form d-flex justify-content-center align-items-center gap-2">
                                 <input type="hidden" name="requestId" value="@request.RequestID" />
+                                <input type="hidden" name="approved" id="approved-@request.RequestID" value="false" />
                                 <div class="d-flex align-items-center">
                                     <div class="action-button-container">
-                                        <button type="submit" name="approved" value="true" class="action-btn approve-btn">
+                                        <button type="submit" onclick="document.getElementById('approved-@request.RequestID').value = 'true';" class="action-btn approve-btn">
                                         </button>
                                     </div>
                                     <div class="action-button-container">
-                                        <button type="submit" name="approved" value="false" class="action-btn reject-btn">
+                                        <button type="submit" onclick="document.getElementById('approved-@request.RequestID').value = 'false';" class="action-btn reject-btn">
                                         </button>
                                     </div>
                                 </div>

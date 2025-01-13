@@ -18,7 +18,6 @@
     }
 
     :root {
-    
     }
 
     body {
@@ -71,6 +70,7 @@
         .btn-custom:hover {
             background-color: #f9fae0;
             transform: translateY(-2px);
+            color: black;
         }
 
     .btn-secondary {
@@ -85,7 +85,6 @@
     }
 
     .review-form {
-  
         padding: 2rem;
         border-radius: 10px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -162,15 +161,11 @@
                 <a asp-controller="Carts" asp-action="Index" class="btn btn-custom" style="background-color: #28a745; color: white;">Add to Cart</a>
             </div>
 
-            <div class="fixed-bottom-right">
-                <a asp-action="Index" class="btn btn-custom btn-secondary btn-float">Back to List</a>
-            </div>
         </div>
     </div>
 </div>
-            <div class="fixed-bottom-right">
-                <a asp-action="Index" class="btn btn-custom btn-secondary btn-float">Back to List</a>
-            </div>
+
+
         </div>
     </div>
 </div>
@@ -217,8 +212,8 @@
         else
         {
             <div class="alert alert-warning">
-				You must be signed in to leave a review.
-			</div>
+                You must be signed in to leave a review.
+            </div>
         }
     </div>
 
@@ -284,4 +279,8 @@
             }
         }
     </div>
+</div>
+
+<div class="fixed-bottom-right">
+    <a asp-action="Index" class="btn btn-custom btn-secondary btn-float">Back to List</a>
 </div>
