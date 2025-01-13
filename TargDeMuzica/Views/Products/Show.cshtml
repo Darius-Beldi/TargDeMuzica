@@ -112,11 +112,7 @@
 </style>
 
 <h1 class="product-title">@Model.ProductName</h1>
-@if (User.IsInRole("Administrator") || (User.IsInRole("Colaborator") && @Model.User?.Id == User.FindFirstValue(ClaimTypes.NameIdentifier)))
 
-{
-    <a class="btn alert-success" asp-action="Delete" asp-controller="Products" asp-route-id="@Model.ProductID">Stergere produs</a>
-}
 
 
 <div class="product-container">

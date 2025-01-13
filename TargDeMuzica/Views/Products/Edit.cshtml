@@ -5,7 +5,7 @@
 }
 
 <h1>@ViewData["Title"]</h1>
-
+<a class="btn alert-success" asp-action="Delete" asp-controller="Products" asp-route-id="@Model.ProductID">Stergere produs</a>
 <div class="row">
     <div class="col-md-8">
         <form asp-action="@(Model.ProductID == 0 ? "Create" : "Edit")">
